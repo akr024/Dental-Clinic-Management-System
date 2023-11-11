@@ -1,7 +1,8 @@
 import express from 'express';
 import {PORT,mongoDBURL} from './config.js'
 import mongoose from 'mongoose';
-import patient from './routes/patientsRoute.js'
+import patient from './routes/patientRoute.js'
+import dentist from './routes/dentistRoute.js'
 const app = express();
 
 app.use(express.json());
@@ -11,6 +12,7 @@ app.get('/', (req,res) => {
 
 //routers for schema elements
 app.use('/patients',patient)
+app.use('/dentists', dentist)
 
 
 mongoose

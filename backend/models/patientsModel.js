@@ -3,8 +3,9 @@ import mongoose from "mongoose";
 const patientSchema = mongoose.Schema(
 {
     Personnummer: {
-        type: Number,
-        required:true
+        type: String,
+        required:true,
+        unique:true
     },
     Firstname: {
         type: String,
@@ -23,7 +24,7 @@ const patientSchema = mongoose.Schema(
         required: true
     },
     email: {
-        type:String,
+        type: String,
         required: true
     }
 });

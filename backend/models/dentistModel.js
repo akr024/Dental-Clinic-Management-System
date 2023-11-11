@@ -3,8 +3,9 @@ import mongoose, { mongo } from "mongoose";
 const dentistSchema = mongoose.Schema(
 {
     Personnummer: {
-        type: Number,
-        required:true
+        type: String,
+        required:true,
+        unique:true
     },
     Firstname: {
         type: String,
