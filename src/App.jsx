@@ -4,7 +4,7 @@ import './App.css'
 import { CssBaseline } from '@mui/material'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 
-import GoogleMap from './components/map/GoogleMap.jsx'
+import GoogleMapComponent from './components/map/GoogleMapComponent.jsx'
 import SideBar from './components/SideBar.jsx'
 
 function generateMockData() {
@@ -34,7 +34,7 @@ function App() {
     <div id="mainContainer">
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <GoogleMap mockData={mockData} />
+        <GoogleMapComponent mockData={mockData} />
         <SideBar onSearchClick={() => { setMockData(generateMockData()) }} />
       </ThemeProvider>
     </div>
