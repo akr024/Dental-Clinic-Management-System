@@ -1,5 +1,6 @@
 import express from 'express'
 import {Patient} from '../models/patientsModel.js'
+import { errorMessage500,errorMessage400 } from './error.js';
 const router = express.Router();
 
 // Create New Patient
@@ -13,7 +14,7 @@ router.post('/', async (req,res) => {
         !req.body.password ||
         !req.body.email
     ){
-        return res.status(400).send({message:'Empty fields'});
+        return res.status(400).send(errorMessage400);
     }
     const newPatient = {
         Personnummer: req.body.Personnummer,
@@ -45,7 +46,7 @@ router.get('/:Personnummer', async (req,res) => {
         
     } catch (error) {
         console.log(error);
-        return res.status(500).send('Something went wrong :(')
+        return res.status(500).send(errorMessage500)
         
     }
 });
@@ -66,12 +67,12 @@ router.patch('/:Personnummer', async (req,res) => {
 
     // Save the updated patient to the database
     await patient.save();
-    res.status(200).json(patient);
+    res.status(201).json(patient);
     } catch (error) {
         console.log(error)
         return res.status(500).send('Something went wrong :(')
     }
-})
+});
 
 // Delete a Users info
 router.delete('/:Personnummer', async (req,res) => {
@@ -89,7 +90,7 @@ router.delete('/:Personnummer', async (req,res) => {
         return res.status(500).send('Something went wrong :(')
     }
 
-})
+});
 
 
 export default router;

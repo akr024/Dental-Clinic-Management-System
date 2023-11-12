@@ -7,13 +7,9 @@ const reviewSchema = mongoose.Schema(
         required: true
     },
     rating:{
-        type: String,
+        type: Number,
         required: true
     },
-    patientID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'patient'
-      },
     clinicID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'clinic'

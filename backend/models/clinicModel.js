@@ -1,4 +1,5 @@
 import mongoose, { mongo } from "mongoose";
+import { Review } from "./reviewModel.js";
 
 const clinicSchema = mongoose.Schema(
 {
@@ -6,24 +7,8 @@ const clinicSchema = mongoose.Schema(
         type:String,
         required:true
     },
-    employedDentist:{
-        type:[
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                required:true,
-                ref:'dentist'
-            }
-        ]
-    },
-    clinicReviews:{
-        type:[
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                required:true,
-                ref:'review'
-            }
-        ]
-    }
+    clinicReviews: [Review.schema]
+    
 });
 
 export const Clinic = mongoose.model('clinic',clinicSchema);

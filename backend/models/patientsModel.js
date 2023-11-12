@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Appointment } from "./appointmentModel.js";
 
 const patientSchema = mongoose.Schema(
 {
@@ -26,7 +27,8 @@ const patientSchema = mongoose.Schema(
     email: {
         type: String,
         required: true
-    }
+    },
+    patientAppointments:[Appointment.schema]
 });
 
 export const Patient = mongoose.model('patient',patientSchema)
