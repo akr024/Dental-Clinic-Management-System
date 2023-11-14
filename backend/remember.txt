@@ -1,3 +1,0 @@
-After the user logs in,
-The info displayed is personalized
-Hence all stuff related to the user will have a '/:Personnummer' path
