@@ -1,34 +1,43 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
+import { CssBaseline } from '@mui/material'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+
+import GoogleMapComponent from './components/map/GoogleMapComponent.jsx'
+import SideBar from './components/SideBar.jsx'
+
+function generateMockData() {
+  const numPins = Math.round(Math.random() * 20 + 1)
+  return Array.from({ length: numPins }, (_, i) => {
+    return {
+      title: `Clinic ${i}`,
+      position: {
+        lat: 57.70838038819724 + (Math.random() * 0.1 - 0.05),
+        lng: 11.974257779527578 + (Math.random() * 0.1 - 0.05)
+      }
+    }
+  })
+}
+
+// Can easily add a switch later
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+  }
+})
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [mockData, setMockData] = useState(generateMockData())
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div id="mainContainer">
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <GoogleMapComponent mockData={mockData} />
+        <SideBar onSearchClick={() => { setMockData(generateMockData()) }} />
+      </ThemeProvider>
+    </div>
   )
 }
 
