@@ -82,7 +82,7 @@ router.delete('/:Personnummer', async (req,res) => {
         if(!deletedPatient){
             return res.status(404).send('Patient not found')
         }
-        res.status(200).send('deleted patient')
+        res.status(200).end()
         
         
     } catch (error) {
