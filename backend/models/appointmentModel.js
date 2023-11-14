@@ -2,10 +2,6 @@ import mongoose, { mongo } from "mongoose";
 
 const appointmentSchema = mongoose.Schema(
 {
-    availability:{
-        type: Boolean,
-        required: true
-},
     dateTime:{
         type:Date,
         required: true
@@ -18,7 +14,6 @@ const appointmentSchema = mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: 'dentist'
     }
-  
 }
 );
 
