@@ -11,7 +11,7 @@ router.post('/:id', async(req,res)=>{
             !req.body.text ||
             !req.body.rating 
         ){
-            return res.status(400).send(errorMessage400)
+            return res.status(400).send('text or rating missing')
         }
         const clinicID = req.params.id
         const clinic = await Clinic.findById(clinicID)
@@ -25,7 +25,7 @@ router.post('/:id', async(req,res)=>{
         }
         clinic.clinicReviews.push(newReview)
         clinic.save();
-        res.status(200).json(clinic.clinicReviews)
+        res.status(200).json(newReview)
         
     } catch (error) {
         console.log(error)

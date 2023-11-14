@@ -67,7 +67,7 @@ router.patch('/:Personnummer', async (req,res) => {
 
     // Save the updated patient to the database
     await patient.save();
-    res.status(201).json(patient);
+    res.status(200).json(patient);
     } catch (error) {
         console.log(error)
         return res.status(500).send('Something went wrong :(')

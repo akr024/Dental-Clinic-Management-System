@@ -6,7 +6,7 @@ const router = express.Router()
 router.post('/', async (req,res) => {
     try {
         if(!req.body.name){
-            return res.status(400).send(errorMessage400)
+            return res.status(400).send('Clinic name is missing')
         }
         const newClinic = { name: req.body.name}
         const result = Clinic.create(newClinic)
@@ -41,7 +41,7 @@ router.patch('/:id', async(req,res) => {
         }
         if(req.body.name)clinic.name=req.body.name
         await clinic.save()
-        res.status(201).json(clinic);
+        res.status(200).json(clinic);
     } catch (error) {
         console.log(error)
         return res.status(500).send(errorMessage500)
@@ -55,7 +55,7 @@ router.delete('/:id', async(req,res)=>{
         if(!clinic){
              return req.status(404).send('Clinic not found')
         }
-        res.status(200).send('Clinic deleted')
+        res.status(204).end()
     } catch (error) {
         console.log(error)
         return res.status(500).send(errorMessage500)
