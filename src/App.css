@@ -1,15 +1,22 @@
-#mainContainer {
-    display: flex;
+#rootContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-#mainContainer>div {
-    flex: 1;
+#contentContainer {
+  display: flex;
+  height: 100%;
 }
 
-#mainContainer>div:nth-child(1) {
-    flex: 0 0 80%;
+#contentContainer>div {
+  flex: 1;
 }
 
-#mainContainer>div:nth-child(2) {
-    flex: 0 0 20%;
+#contentContainer>div:nth-child(1) {
+  flex: 0 0 80%;
+}
+
+#contentContainer>div:nth-child(2) {
+  flex: 0 0 20%;
 }
