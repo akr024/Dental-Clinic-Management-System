@@ -1,8 +1,8 @@
 #searchContainer {
-    margin: 20px 0;
-    text-align: center;
+  margin: 20px 0;
+  text-align: center;
 }
 
 #searchContainer * {
-    margin: 10px;
+  margin: 10px;
 }

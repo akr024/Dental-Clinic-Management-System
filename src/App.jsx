@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import './App.css'
 
 import { CssBaseline } from '@mui/material'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 import GoogleMapComponent from './components/map/GoogleMapComponent.jsx'
+import NavBar from './components/navbar/NavBar.jsx'
 import SideBar from './components/SideBar.jsx'
 
 function generateMockData() {
@@ -20,22 +21,27 @@ function generateMockData() {
   })
 }
 
-// Can easily add a switch later
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-  }
-})
-
 function App() {
   const [mockData, setMockData] = useState(generateMockData())
+  const [colorMode, setColorMode] = useState('light');
+
+  const theme = useMemo(() => createTheme(
+    {
+      palette: {
+        mode: colorMode,
+      }
+    }
+  ), [colorMode]);
 
   return (
-    <div id="mainContainer">
+    <div id="rootContainer">
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <GoogleMapComponent mockData={mockData} />
-        <SideBar onSearchClick={() => { setMockData(generateMockData()) }} />
+        <NavBar toggleColorMode={() => setColorMode(theme.palette.mode === 'dark' ? 'light' : 'dark')} />
+        <div id="contentContainer">
+          <GoogleMapComponent mockData={mockData} />
+          <SideBar onSearchClick={() => { setMockData(generateMockData()) }} />
+        </div>
       </ThemeProvider>
     </div>
   )
