@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import './App.css'
 
 import { CssBaseline } from '@mui/material'
@@ -7,6 +7,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles'
 import GoogleMapComponent from './components/map/GoogleMapComponent.jsx'
 import NavBar from './components/navbar/NavBar.jsx'
 import SideBar from './components/SideBar.jsx'
+import SignInSignUpModal from './components/signin/SignInSignUpModal'
 
 function generateMockData() {
   const numPins = Math.round(Math.random() * 20 + 1)
@@ -22,6 +23,7 @@ function generateMockData() {
 }
 
 function App() {
+  const [signInModalOpen, setSignInModalOpen] = useState(false)
   const [mockData, setMockData] = useState(generateMockData())
   const [colorMode, setColorMode] = useState('light');
 
@@ -37,11 +39,12 @@ function App() {
     <div id="rootContainer">
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <NavBar toggleColorMode={() => setColorMode(theme.palette.mode === 'dark' ? 'light' : 'dark')} />
+        <NavBar toggleColorMode={() => setColorMode(theme.palette.mode === 'dark' ? 'light' : 'dark')} onLoginClick={() => setSignInModalOpen(true)} />
         <div id="contentContainer">
           <GoogleMapComponent mockData={mockData} />
           <SideBar onSearchClick={() => { setMockData(generateMockData()) }} />
         </div>
+        <SignInSignUpModal open={signInModalOpen} onClose={() => setSignInModalOpen(false)} />
       </ThemeProvider>
     </div>
   )
