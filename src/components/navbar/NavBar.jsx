@@ -18,7 +18,7 @@ import { useTheme } from '@mui/material/styles'
 
 const pages = ['Home', 'Link2', 'About']
 
-function NavBar({ toggleColorMode }) {
+function NavBar({ toggleColorMode, onLoginClick }) {
   const theme = useTheme()
 
   const [authenticated, setAuthenticated] = useState(false);
@@ -79,7 +79,7 @@ function NavBar({ toggleColorMode }) {
             </IconButton>
           </Box>
 
-          {!authenticated ? (<Button color="inherit" onClick={() => setAuthenticated(true)}>Login</Button>) : (
+          {!authenticated ? (<Button color="inherit" onClick={onLoginClick}>Login</Button>) : (
             <div>
               <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleAccountMenu} color="inherit" >
                 <AccountCircle />
