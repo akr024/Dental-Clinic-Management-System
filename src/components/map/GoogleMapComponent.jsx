@@ -30,7 +30,7 @@ function GoogleMapComponent({ mockData }) {
 
   return isLoaded ? (
     <GoogleMap
-      mapContainerStyle={{ height: '100%' }}
+      mapContainerStyle={{ height: '100%', flex: '1 1 100%', width: {xs: '100vh', md: 'inherit'} }}
       options={mapOptions}
       center={center}
       zoom={12}

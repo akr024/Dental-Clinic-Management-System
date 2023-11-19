@@ -10,7 +10,7 @@ function GoogleMapMarkers(props) {
     const newMarkers = props.markers.map((data, index) => {
       return new google.maps.Marker({
         map: props.map,
-        title: data.title,
+        title: data.clinicName,
         position: {
           lat: data.position.lat,
           lng: data.position.lng,
