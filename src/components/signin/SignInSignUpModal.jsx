@@ -26,7 +26,8 @@ const style = {
   width: { xs: '100%', md: 'inherit' },
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4
+  p: 4,
+  overflow: 'auto'
 }
 
 const initialSignInState = {
