@@ -51,6 +51,7 @@ function SearchComponent({ onSearchClick, searchResultMockData }) {
       <Box component="form" onSubmit={onSubmit} sx={{ p: 1, m: 1, textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h6" sx={{ mb: 1, mt: 0 }}>Find Appointments</Typography>
         <DateTimePicker
+          label="from"
           views={displayFormat}
           maxDateTime={toDateTime != null ? toDateTime : undefined}
           minDateTime={now}
@@ -61,6 +62,7 @@ function SearchComponent({ onSearchClick, searchResultMockData }) {
         />
         <Typography sx={{ fontWeight: 'bold' }}> - </Typography>
         <DateTimePicker
+          label="to"
           views={displayFormat}
           minDateTime={fromDateTime != null ? fromDateTime : now}
           value={toDateTime}
