@@ -1,17 +1,17 @@
 import { useMemo, useState } from 'react'
 
 import { Box, CssBaseline } from '@mui/material'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import enGB from 'date-fns/locale/en-GB'
 
-import GoogleMapComponent from './components/map/GoogleMapComponent.jsx'
-import NavBar from './components/navbar/NavBar.jsx'
-import SearchComponent from './components/SearchComponent.jsx'
-import SignInSignUpModal from './components/signin/SignInSignUpModal'
 import ClinicDetailsComponent from './components/ClinicDetailsComponent.jsx'
 import ConfirmAppointmentDialog from './components/ConfirmAppointmentDialog.jsx'
+import SearchComponent from './components/SearchComponent.jsx'
+import GoogleMapComponent from './components/map/GoogleMapComponent.jsx'
+import NavBar from './components/navbar/NavBar.jsx'
+import SignInSignUpModal from './components/signin/SignInSignUpModal'
 
 function generateMockData() {
   const numPins = Math.round(Math.random() * 20 + 1)
@@ -63,7 +63,7 @@ function App() {
   }
 
   // Simplest way to get it to be responsive when clicking on the same card twice
-  const onClinicSelect = e => setSelectedClinic({ ...e })
+  const onClinicSelect = e => setSelectedClinic(e ? { ...e } : null)
 
   const onBookAppointment = selectedAppointment => {
     setSelectedAppointment(selectedAppointment)
@@ -83,7 +83,7 @@ function App() {
             <SearchComponent onSearchClick={onSearchClick} searchResultMockData={mockData} onCardClick={onClinicSelect} />
           </Box>
           <SignInSignUpModal open={signInModalOpen} onClose={() => setSignInModalOpen(false)} />
-          <ConfirmAppointmentDialog open={confirmAppointmentDialogOpen} onClose={() => setConfirmAppointmentDialogOpen(false)} appointment={selectedAppointment}/>
+          <ConfirmAppointmentDialog open={confirmAppointmentDialogOpen} onClose={() => setConfirmAppointmentDialogOpen(false)} appointment={selectedAppointment} />
         </Box>
       </ThemeProvider>
     </LocalizationProvider>

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 import GoogleMapMarkers from './GoogleMapMarkers.jsx'
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api'
@@ -22,6 +22,10 @@ function GoogleMapComponent({ children, mockData, selectedClinic, onMarkerClick 
   const onLoad = useCallback((map) => setMap(map), [])
   const onUnmount = useCallback(() => setMap(null), [])
 
+  useEffect(() => { 
+    map?.addListener('click', e => onMarkerClick(null)) 
+  }, [map])
+
   const mapOptions = {
     minZoom: 10,
     clickableIcons: false,
@@ -31,14 +35,14 @@ function GoogleMapComponent({ children, mockData, selectedClinic, onMarkerClick 
 
   return isLoaded ? (
     <GoogleMap
-      mapContainerStyle={{ height: '100%', flex: '1 1 100%', width: { xs: '100vh', md: 'inherit' } }}
+      mapContainerStyle={{ height: '100%', flex: '1 1 100%', width: { xs: '100vh', md: 'inherit' }, zIndex: 1000 }}
       options={mapOptions}
       center={center}
       zoom={12}
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
-      { children }
+      {children}
       <GoogleMapMarkers map={map} markers={mockData} selectedClinic={selectedClinic} onMarkerClick={onMarkerClick} />
     </GoogleMap>
   ) : <div style={{ height: '100%' }}></div>
