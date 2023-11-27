@@ -1,29 +1,46 @@
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
-function GoogleMapMarkers(props) {
+function GoogleMapMarkers({ map, markers, selectedClinic, onMarkerClick }) {
+  const markersRef = useRef()
+
   useEffect(() => {
-    if (!props.map) {
+    if (selectedClinic && markersRef.current) {
+      const marker = markersRef.current.find(e => e.id === selectedClinic.id)
+      map.setZoom(16);
+      map.setCenter(selectedClinic.position);
+    }
+  }, [selectedClinic])
+
+  useEffect(() => {
+    if (!map) {
       return
     }
 
-    const newMarkers = props.markers.map((data, index) => {
-      return new google.maps.Marker({
-        map: props.map,
+    const newMarkers = markers.map(data => {
+      const marker = new google.maps.Marker({
+        map: map,
         title: data.clinicName,
         position: {
           lat: data.position.lat,
           lng: data.position.lng,
         }
-      })
+      });
+
+      marker.addListener('click', () => onMarkerClick(data))
+      return marker
     })
 
-    const latLngBounds = new google.maps.LatLngBounds()
-    newMarkers.forEach(marker => latLngBounds.extend(marker.getPosition()))
-    props.map.fitBounds(latLngBounds)
+    markersRef.current = newMarkers;
+
+    if (!selectedClinic) {
+      const latLngBounds = new google.maps.LatLngBounds()
+      newMarkers.forEach(marker => latLngBounds.extend(marker.getPosition()))
+      map.fitBounds(latLngBounds)
+    }
 
     return () => newMarkers.forEach(marker => marker.setMap(null))
-  }, [props.map, props.markers])
+  }, [map, markers])
 
   return null
 }

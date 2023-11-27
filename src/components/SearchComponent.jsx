@@ -22,7 +22,7 @@ const slotPropsErrorState = {
   }
 }
 
-function SearchComponent({ onSearchClick, searchResultMockData }) {
+function SearchComponent({ onSearchClick, searchResultMockData, onCardClick }) {
   const [fromDateTime, setFromDateTime] = useState(null)
   const [toDateTime, setToDateTime] = useState(null)
 
@@ -73,7 +73,7 @@ function SearchComponent({ onSearchClick, searchResultMockData }) {
         <Button type="submit" variant="contained" size="medium" sx={{ mt: 1 }}>Search</Button>
       </Box>
       <Box>
-        {searchResultMockData.map(e => (<SearchResultCard key={e.id} data={e} />))}
+        {searchResultMockData.map(e => (<SearchResultCard key={e.id} data={e} onClick={() => onCardClick(e)} />))}
       </Box>
     </Box>
   )

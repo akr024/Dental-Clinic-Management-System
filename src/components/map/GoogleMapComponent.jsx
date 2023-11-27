@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 import GoogleMapMarkers from './GoogleMapMarkers.jsx'
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api'
@@ -12,7 +12,7 @@ const center = {
   lng: 11.974257779527578
 };
 
-function GoogleMapComponent({ mockData }) {
+function GoogleMapComponent({ children, mockData, selectedClinic, onMarkerClick }) {
   const theme = useTheme()
 
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY })
@@ -22,7 +22,12 @@ function GoogleMapComponent({ mockData }) {
   const onLoad = useCallback((map) => setMap(map), [])
   const onUnmount = useCallback(() => setMap(null), [])
 
+  useEffect(() => { 
+    map?.addListener('click', e => onMarkerClick(null)) 
+  }, [map])
+
   const mapOptions = {
+    minZoom: 10,
     clickableIcons: false,
     disableDefaultUI: true,
     styles: theme.palette.mode === 'dark' ? googleMapDarkModeStyles : googleMapLightModeStyles
@@ -30,14 +35,15 @@ function GoogleMapComponent({ mockData }) {
 
   return isLoaded ? (
     <GoogleMap
-      mapContainerStyle={{ height: '100%', flex: '1 1 100%', width: {xs: '100vh', md: 'inherit'} }}
+      mapContainerStyle={{ height: '100%', flex: '1 1 100%', width: { xs: '100vh', md: 'inherit' }, zIndex: 1000 }}
       options={mapOptions}
       center={center}
       zoom={12}
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
-      <GoogleMapMarkers map={map} markers={mockData} />
+      {children}
+      <GoogleMapMarkers map={map} markers={mockData} selectedClinic={selectedClinic} onMarkerClick={onMarkerClick} />
     </GoogleMap>
   ) : <div style={{ height: '100%' }}></div>
 }
