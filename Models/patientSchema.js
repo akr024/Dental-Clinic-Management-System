@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-const patientSchema = mongoose.Schema(
+var patientSchema = new Schema(
     {
         Personnummer: {
             type: String,
@@ -29,4 +30,4 @@ const patientSchema = mongoose.Schema(
         }
     });
 
-exports.Patient = mongoose.model('patient', patientSchema)
+exports.Patient = mongoose.model('patient', patientSchema);
