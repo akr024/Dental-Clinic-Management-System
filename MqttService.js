@@ -112,12 +112,12 @@ function publishResponse(packet, message, opts = {}) {
 }
 
 export {
-  initializeMqttUsingEnvVariables,
   initializeMqtt,
-  subscribe,
-  subscribeShared,
-  unsubscribe,
+  initializeMqttUsingEnvVariables,
   publish,
   publishAwaitingResponse,
-  publishResponse
+  publishResponse, subscribe,
+  subscribeShared,
+  unsubscribe
 }
+
