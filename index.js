@@ -2,7 +2,6 @@ import express from 'express';
 import {PORT,mongoDBURL} from './config.js'
 import mongoose from 'mongoose';
 import patientPath from './routes/patientRoute.js'
-import appointmentPath from './routes/appointmentRoute.js'
 import clinicPath from './routes/clinicRoute.js'
 import reviewPath from './routes/reviewRoute.js'
 const app = express();
@@ -14,7 +13,6 @@ app.get('/', (req,res) => {
 
 //routers for schema elements
 app.use('/patients',patientPath)
-app.use('/appointments',appointmentPath)
 app.use('/clinics',clinicPath)
 app.use('/clinics',reviewPath)
 
