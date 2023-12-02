@@ -1,12 +1,13 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 
-const clinicSchema = mongoose.Schema({
+const clinicSchema = Schema({
   name: { type: String, required: true, unique: true },
   position: {
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },
   },
-  address: { type: String, required: true }
+  address: { type: String, required: true },
+  appointments: [{ type: Schema.Types.ObjectId, ref: 'appointment' }]
 });
 
-export const Clinic = mongoose.model('clinic', clinicSchema);
+export const Clinic = model('clinic', clinicSchema);

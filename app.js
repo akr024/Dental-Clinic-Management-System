@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 
 import { initializeMqttUsingEnvVariables } from 'mqtt-service';
 
+import AppointmentController from './src/controllers/AppointmentController.js';
 import ClinicController from './src/controllers/ClinicController.js';
 
 dotenv.config();
@@ -26,4 +27,5 @@ mqttClient.on('connect', () => {
   console.log('Connected to mqtt broker')
 
   ClinicController.initialize()
+  AppointmentController.initialize()
 })
