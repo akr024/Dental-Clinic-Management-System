@@ -11,10 +11,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "mongodb": "^6.2.0",
     "mongoose": "^8.0.0",
+    "mqtt": "^5.3.1",
     "nodemon": "^3.0.1"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "mqtt-service": "git+ssh://git@git.chalmers.se:courses/dit355/2023/student-teams/dit356-2023-09/mqttservicepackage.git#v1.0.0"
+  }
 }
