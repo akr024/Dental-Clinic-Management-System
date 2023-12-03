@@ -34,6 +34,7 @@ async function createClinic(inputClinic) {
 async function queryClinics() {
   return await Clinic.find()
     .select('_id name address position')
+    .populate('appointments')
     .then(clinics => ({ clinics }))
 }
 
