@@ -24,9 +24,9 @@ async function createClinic(inputClinic) {
       position: addressValidationResult.position
     })
 
-    const savedClinic = newClinic.save()
+    const savedClinic = await newClinic.save()
 
-    return { success: true, savedClinic }
+    return { success: true, clinic: savedClinic }
   } catch (err) {
     if (err.code === 11000) {
       return { success: false, msg: `A clinic named "${inputClinic.name}" already exists` }
@@ -39,6 +39,16 @@ async function createClinic(inputClinic) {
 }
 
 async function queryClinics(query) {
+  if (!query.appointments) {
+    return Clinic.find()
+      .select('_id name address position')
+      .populate({
+        path: 'appointments',
+        options: { sort: { date: 1 } }
+      })
+      .then(result => ({ success: true, clinics: result }))
+  }
+
   const latestAvailabilityDate = addHours(new Date(), MIN_HOURS_BEFORE_BOOKING)
 
   const matchStage = { $match: {} }
@@ -77,9 +87,9 @@ async function queryClinics(query) {
         dateTime: 1,
         available: {
           $and: [
-            { $ifNull: ["$patientId", true] },
+            { $ifNull: ['$patientId', true] },
             {
-              $gte: ["$dateTime", latestAvailabilityDate]
+              $gte: ['$dateTime', latestAvailabilityDate]
             }
           ]
         }
@@ -109,9 +119,9 @@ async function queryClinics(query) {
         address: '$clinic.address',
         position: '$clinic.position',
         appointments: {
-          _id: 1,
-          dateTime: 1,
-          available: 1
+          $sortArray: {
+            input: '$appointments', sortBy: { dateTime: 1 }
+          }
         }
       }
     }
