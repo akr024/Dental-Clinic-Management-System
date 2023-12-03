@@ -2,6 +2,7 @@ import { addHours } from 'date-fns'
 import { Appointment } from '../models/AppointmentModel.js'
 import { Clinic } from '../models/ClinicModel.js'
 import GoogleGeocodeService from './GoogleGeocodeService.js'
+import { max } from 'date-fns';
 
 const MIN_HOURS_BEFORE_BOOKING = 1
 
@@ -42,13 +43,28 @@ async function queryClinics(query) {
 
   const matchStage = { $match: {} }
 
-  if (query.appointments?.onlyAvailable)
-    matchStage.$match.patientId = null
+  if (query.appointments) {
+    if (query.appointments.onlyAvailable) {
+      matchStage.$match.patientId = null
+    }
 
-  if (query.appointments?.from || query.appointments?.to) {
-    matchStage.$match.dateTime = {
-      ...(query.appointments.from && { $gte: new Date(query.appointments.from) }),
-      ...(query.appointments.to && { $lte: new Date(query.appointments.to) })
+    if (query.appointments.from || query.appointments.to || query.appointments.onlyAvailable) {
+      const dateTimeCondition = {};
+
+      if (query.appointments.onlyAvailable) {
+        dateTimeCondition.$gte = latestAvailabilityDate
+      }
+
+      if (query.appointments.from) {
+        const fromDate = new Date(query.appointments.from)
+        dateTimeCondition.$gte = dateTimeCondition.$gte ? max([dateTimeCondition.$gte, fromDate]) : fromDate
+      }
+
+      if (query.appointments.to) {
+        dateTimeCondition.$lte = new Date(query.appointments.to);
+      }
+
+      matchStage.$match.dateTime = dateTimeCondition;
     }
   }
 
