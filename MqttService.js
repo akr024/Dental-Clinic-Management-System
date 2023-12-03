@@ -64,7 +64,7 @@ function subscribeShared(shareName, topic, handler, opts = {}) {
   subscriptionHandlers.set(topic, handler)
 
   const topicString = `$share/${shareName}/${topic}`
-  mqttClient.subscribe(topic, opts)
+  mqttClient.subscribe(topicString, opts)
 }
 
 function unsubscribe(topic) {
