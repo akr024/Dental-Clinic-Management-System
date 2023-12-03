@@ -41,7 +41,6 @@ async function createAppointment(inputAppointment) {
   }
 }
 
-
 export default {
   createAppointment,
 }
