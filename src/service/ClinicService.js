@@ -100,7 +100,7 @@ async function queryClinics(query) {
       }
     }
   ])
-    .then(clinics => ({ clinics }))
+    .then(clinics => ({ success: true, clinics }))
 }
 
 export default {
