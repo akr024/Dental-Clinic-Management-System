@@ -2,7 +2,8 @@ import { Box, Typography } from '@mui/material'
 
 import Button from '@mui/material/Button'
 import { DateTimePicker } from '@mui/x-date-pickers'
-import { useState } from 'react'
+import { addDays, addMinutes, getMinutes, startOfDay, startOfHour } from 'date-fns'
+import { useEffect, useState } from 'react'
 import SearchResultCard from './SearchResultCard'
 
 const style = {
@@ -22,7 +23,7 @@ const slotPropsErrorState = {
   }
 }
 
-function SearchComponent({ onSearchClick, searchResultMockData, onCardClick }) {
+function SearchComponent({ onSearchClick, clinicData, onCardClick }) {
   const [fromDateTime, setFromDateTime] = useState(null)
   const [toDateTime, setToDateTime] = useState(null)
 
@@ -34,6 +35,19 @@ function SearchComponent({ onSearchClick, searchResultMockData, onCardClick }) {
   const [toError, setToError] = useState(null)
 
   const now = new Date()
+  const minDate = startOfDay(now)
+
+  useEffect(() => {
+    // Default to nearest 30 minute interval ahead
+    const initialFromDateTime = addMinutes(startOfHour(now), Math.ceil(getMinutes(now) / 30) * 30)
+    const initialToDateTime = addDays(initialFromDateTime, 7)
+
+    setFromDateTime(initialFromDateTime)
+    setToDateTime(initialToDateTime)
+
+    // Initiates API call on mount, to fetch clinics for default time interval
+    onSearchClick(initialFromDateTime, initialToDateTime)
+  }, [])
 
   const onSubmit = e => {
     e.preventDefault()
@@ -42,7 +56,7 @@ function SearchComponent({ onSearchClick, searchResultMockData, onCardClick }) {
     setToErrorProps(toDateTime == null ? slotPropsErrorState : null)
 
     if (!fromError && !toError && fromDateTime && toDateTime) {
-      onSearchClick()
+      onSearchClick(fromDateTime, toDateTime)
     }
   }
 
@@ -54,7 +68,7 @@ function SearchComponent({ onSearchClick, searchResultMockData, onCardClick }) {
           label="from"
           views={displayFormat}
           maxDateTime={toDateTime != null ? toDateTime : undefined}
-          minDateTime={now}
+          minDateTime={minDate}
           value={fromDateTime}
           onChange={newValue => { setFromDateTime(newValue); setFromErrorProps(null) }}
           onError={e => setFromError(e)}
@@ -64,7 +78,7 @@ function SearchComponent({ onSearchClick, searchResultMockData, onCardClick }) {
         <DateTimePicker
           label="to"
           views={displayFormat}
-          minDateTime={fromDateTime != null ? fromDateTime : now}
+          minDateTime={fromDateTime != null ? fromDateTime : minDate}
           value={toDateTime}
           onChange={newValue => { setToDateTime(newValue); setToErrorProps(null) }}
           onError={e => setToError(e)}
@@ -73,7 +87,7 @@ function SearchComponent({ onSearchClick, searchResultMockData, onCardClick }) {
         <Button type="submit" variant="contained" size="medium" sx={{ mt: 1 }}>Search</Button>
       </Box>
       <Box>
-        {searchResultMockData.map(e => (<SearchResultCard key={e.id} data={e} onClick={() => onCardClick(e)} />))}
+        {clinicData.map(e => (<SearchResultCard key={e._id} clinic={e} onClick={() => onCardClick(e)} />))}
       </Box>
     </Box>
   )

@@ -6,14 +6,13 @@ function GoogleMapMarkers({ map, markers, selectedClinic, onMarkerClick }) {
 
   useEffect(() => {
     if (selectedClinic && markersRef.current) {
-      const marker = markersRef.current.find(e => e.id === selectedClinic.id)
       map.setZoom(16);
       map.setCenter(selectedClinic.position);
     }
   }, [selectedClinic])
 
   useEffect(() => {
-    if (!map) {
+    if (!map || markers?.length === 0) {
       return
     }
 

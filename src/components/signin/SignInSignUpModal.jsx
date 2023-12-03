@@ -20,7 +20,6 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   maxHeight: '100%',
-  overflow: 'scroll',
   maxWidth: { md: 400 },
   height: { xs: '100%', md: 'inherit' },
   width: { xs: '100%', md: 'inherit' },
