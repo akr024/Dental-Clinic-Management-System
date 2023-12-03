@@ -13,7 +13,7 @@
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
     "mongoose": "^8.0.2",
-    "mqtt-service": "git+ssh://git@git.chalmers.se:courses/dit355/2023/student-teams/dit356-2023-09/mqttservicepackage.git#v1.0.0"
+    "mqtt-service": "git+ssh://git@git.chalmers.se:courses/dit355/2023/student-teams/dit356-2023-09/mqttservicepackage.git#v1.0.1"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
