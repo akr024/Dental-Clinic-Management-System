@@ -26,8 +26,16 @@ try {
             password: req.body.password,
             email: req.body.email
         }
-        publishAwaitingResponse(patient_publish_create,JSON.stringify({Personnummer:Personnummer}),()=>{
+        publishAwaitingResponse(patient_publish_create,JSON.stringify(newPatient),(topic,payload,packet)=>{
 
+            const response = JSON.parse(payload.toString())
+            if(response.success){
+                res.status(201).json(response.newPatient)
+            } else{
+                res.status(400).json(response.msg)
+            }
+            
+            
             
 
         })
