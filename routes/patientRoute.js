@@ -26,17 +26,12 @@ try {
             password: req.body.password,
             email: req.body.email
         }
-        
-        publishAwaitingResponse(patient_publish_create,JSON.stringify({Personnummer:Personnummer}), (patient_subscribe_create,payload,packet) =>{
+        publishAwaitingResponse(patient_publish_create,JSON.stringify({Personnummer:Personnummer}),()=>{
 
-            if(JSON.stringify(payload) === 'could not find'){
-                publish(patient_publish_create,JSON.stringify(newPatient))
-                res.status(201).json({msg:'Patient created and published successfully'})
-            } else{
-                res.status(409).json({msg:'Account already exists'})
+            
 
-            }
         })
+        
 } catch (error) {
     return res.status(500).json({msg:'patient creation unsuccessful'})
 }
