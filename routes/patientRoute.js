@@ -4,7 +4,6 @@ import express from 'express'
 const router = express.Router()
 
 
-initializeMqttUsingEnvVariables()
 
 router.post('/',async(req,res)=>{
 try {
