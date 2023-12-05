@@ -8,3 +8,12 @@ export const Patient_mqtt_Pub_POST_Topic = 'patient/Publish/POST';
 export const Patient_mqtt_Pub_GET_Topic = 'patient/Publish/GET';
 export const Patient_mqtt_Pub_DELETE_Topic = 'patient/Publish/DELETE';
 export const Patient_mqtt_Pub_PUT_Topic = 'patient/Publish/PUT';
+
+
+//subcribe share variables
+export const SUBSCRIPTION_SHARE_NAME ='user_service';
+export const SUB_TOPIC_USER_QUERRY = 'patient/Publish/GET';
+
+//mqtt 
+export const MQTT_BROKER_URL = 'mqtt://broker.hivemq.com';
+export const MQTT_BROKER_PORT = 1883;

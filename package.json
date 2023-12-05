@@ -9,6 +9,7 @@
     "start": "node ./bin/www",
     "dev": "nodemon ../bin/www"
   },
+  "type": "module",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cookie-parser": "~1.4.4",
@@ -19,6 +20,7 @@
     "mongodb": "^6.2.0",
     "mongoose": "^8.0.0",
     "morgan": "~1.9.1",
+    "mqtt-service": "git+ssh://git@git.chalmers.se:courses/dit355/2023/student-teams/dit356-2023-09/mqttservicepackage.git#v1.0.0",
     "nodemon": "^3.0.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0"
