@@ -1,79 +1,81 @@
-import express from 'express';
-const router = express.Router();
 import { Patient } from '../Models/patientSchema.js';
-import subcriber from '../mqttService/subcriber.js';
 import {
-    initializeMqttUsingEnvVariables,
-    publish,
-    publishAwaitingResponse,
     publishResponse,
     subscribe,
     subscribeShared,
     unsubscribe
 } from 'mqtt-service';
-import { initializeMqttClient } from '../mqttService/initializeMQTT.js';
-import { SUBSCRIPTION_SHARE_NAME, SUB_TOPIC_USER_QUERRY, Patient_mqtt_Sub_GET_Topic, Patient_mqtt_Pub_GET_Topic } from '../config.js';
+import {
+    SUBSCRIPTION_SHARE_NAME,
+    patient_publish_query,
+    patient_subcribe_create,
+    patient_subcribe_delete
+} from '../config.js';
 
-const host = 'test.mosquitto.org';
-const protocol = 'mqtt';
-const port = 8883;
-const RESPONSE_QOS = 1
-const mqttClientService = initializeMqttClient()
-console.log(mqttClientService)
+function initialize() {
+    const RESPONSE_QOS = 1
 
-//post patient
-subcriber(host, protocol, port, `patient/Publish/POST`)
-    .then(async (message) => {
-        console.log('Received message:', message);
+    //post patient
+    subscribeShared(SUBSCRIPTION_SHARE_NAME, patient_subcribe_create, async (topic, payload, packet) => {
+        console.log('Received message:', payload.toString());
+
         try {
-            const newPatientData = JSON.parse(message);
+            const newPatientData = JSON.parse(payload.toString());
             const newPatient = new Patient({
                 Personnummer: newPatientData.Personnummer,
                 Firstname: newPatientData.Firstname,
                 Lastname: newPatientData.Lastname,
-                age: newPatientData.age,
                 password: newPatientData.password,
                 email: newPatientData.email,
             });
-            Patient.create(newPatient)
-                .then(createdPatient => {
-                    console.log('Patient created and saved to the database:', createdPatient);
-                });
-        } catch (error) {
+            const savePatient = await Patient.create(newPatient);
+            const res = { success: true, patient: savePatient };
+            publishResponse(packet, JSON.stringify(res), { qos: RESPONSE_QOS });
+        }
+        catch (error) {
             if (error.code === 11000) {
+                const msg = 'Patient with the same Personnummer already exists.';
+                publishResponse(packet, JSON.stringify({ success: false, msg }), { qos: RESPONSE_QOS });
                 console.error('Duplicate key error. Patient with the same Personnummer already exists.');
             } else {
+                const msg = 'internal server error';
+                publishResponse(packet, JSON.stringify({ success: false, msg }), { qos: RESPONSE_QOS });
                 console.error('Error:', error);
             }
         }
     })
-    .catch((error) => {
-        console.error('Error:', error);
+
+
+    //get patient from personummer using mqtt service component
+    subscribeShared(SUBSCRIPTION_SHARE_NAME, patient_publish_query, async (topic, payload, packet) => {
+        try {
+            const patientNummer = JSON.parse(payload.toString()).Personnummer;
+            const patients = await Patient.findOne({ Personnummer: patientNummer }).select('-password');
+            const res = { success: true, patient: patients };
+            // Publish the response
+            publishResponse(packet, JSON.stringify(res), { qos: RESPONSE_QOS });
+            console.log('Queried patients:', patients);
+        } catch (error) {
+            const msg = 'internal server error';
+            publishResponse(packet, JSON.stringify({ success: false, msg }), { qos: RESPONSE_QOS });
+            console.error('Error querying patients:', error);
+        }
     });
 
-//get all patients using mqtt service component
-subscribeShared(SUBSCRIPTION_SHARE_NAME, SUB_TOPIC_USER_QUERRY, async () => {
-    console.log('Subscribed to topic: ' + SUB_TOPIC_USER_QUERRY + 'with sub share name ' + SUBSCRIPTION_SHARE_NAME)
-    try {
-        const patients = await Patient.find().select('-password');
-        publishResponse(packet, JSON.stringify(patients));
-        console.log(patients);
-    } catch (error) {
-        console.error('Error querying patients:', error);
-    }
-});
 
-//get patient from personummer using mqtt service component
-subscribeShared(SUBSCRIPTION_SHARE_NAME, SUB_TOPIC_USER_QUERRY, async (message, packet) => {
-    console.log('Subscribed to topic: ' + SUB_TOPIC_USER_QUERRY + ' with sub share name ' + SUBSCRIPTION_SHARE_NAME);
-    try {
-        const patients = await Patient.find({ message }).select('-password');
-        // Publish the response
-        publishResponse(packet, JSON.stringify(patients), RESPONSE_QOS);
-        console.log('Queried patients:', patients);
-    } catch (error) {
-        console.error('Error querying patients:', error);
-    }
-});
+    //delete patient with personummer
+    subscribeShared(SUBSCRIPTION_SHARE_NAME, patient_subcribe_delete, async (topic, payload, packet) => {
+        const patientNummer = JSON.parse(payload.toString()).Personnummer;
+        try {
+            const patients = await Patient.findOneAndDelete({ Personnummer: patientNummer }).exec();
+            console.log('Deleted patient with personummer: ', patients);
+        } catch (error) {
+            console.error('Error ', error);
+        }
+    });
 
-export default router;
+}
+
+export default {
+    initialize
+}

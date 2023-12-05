@@ -3,12 +3,17 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-
+import { initializeMqttUsingEnvVariables } from 'mqtt-service';
 //routes
 import patientRouter from './routes/patients.js';
 
-var app = express();
 
+const mqttClientService = initializeMqttUsingEnvVariables();
+mqttClientService.on('connect', () => {
+  patientRouter.initialize();
+})
+
+var app = express();
 
 // set up session
 app.use(cookieParser());
@@ -20,7 +25,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join('public')));
 
-app.use('/', patientRouter);
 
 
 // catch 404 and forward to error handler
