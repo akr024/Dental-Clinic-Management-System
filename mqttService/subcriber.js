@@ -1,4 +1,4 @@
-var mqtt = require('mqtt');
+import mqtt from 'mqtt';
 var mqtt_url = process.env.CLOUDMQTT_URL || 'mqtt://test.mosquitto.org/:8883';
 
 function subcriber(host, protocol, port, topic) {
@@ -41,4 +41,4 @@ function handleReceivedMessage(message) {
     console.log("Handling the received message:", message);
 };
 
-module.exports = subcriber;
+export default subcriber;

@@ -3,11 +3,10 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose')
-
-var app = require('../app');
-var debug = require('debug')('group-09-project-dentist-api:server');
-var http = require('http');
+import mongoose from 'mongoose';
+import app from '../app.js';
+import debug from 'debug';
+import http from 'http';
 
 
 /**
