@@ -1,23 +1,12 @@
 
-//subscribe topics from API
-export const Patient_mqtt_Sub_GET_Topic = 'patient/Subscribe/GET';
-export const Patient_mqtt_Sub_DELETE_Topic = 'patient/Subscribe/DELETE';
-export const Patient_mqtt_Sub_PUT_Topic = 'patient/Subscribe/PUT';
-
-//Pub topics from API
-export const Patient_mqtt_Pub_POST_Topic = 'patient/Publish/POST';
-export const Patient_mqtt_Pub_GET_Topic = 'patient/Publish/GET';
-export const Patient_mqtt_Pub_DELETE_Topic = 'patient/Publish/DELETE';
-export const Patient_mqtt_Pub_DELETE_ALL_Topic = 'patient/Publish/DELETE/ALL';
-export const Patient_mqtt_Pub_PUT_Topic = 'patient/Publish/PUT';
-
 //pub with res
 export const patient_publish_query = 'patient/search';
-export const patient_sub_create = 'patient/create'
+export const patient_subcribe_create = 'patient/create';
+export const patient_subcribe_delete = 'patient/delete';
+
 
 //subcribe share variables
 export const SUBSCRIPTION_SHARE_NAME = 'user_service';
-export const SUB_TOPIC_USER_QUERRY = 'patient/Publish/GET';
 
 //mqtt 
 export const MQTT_BROKER_URL = 'mqtt://broker.hivemq.com';

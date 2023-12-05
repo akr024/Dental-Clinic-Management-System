@@ -1,8 +1,5 @@
 import { Patient } from '../Models/patientSchema.js';
 import {
-    initializeMqttUsingEnvVariables,
-    publish,
-    publishAwaitingResponse,
     publishResponse,
     subscribe,
     subscribeShared,
@@ -10,16 +7,16 @@ import {
 } from 'mqtt-service';
 import {
     SUBSCRIPTION_SHARE_NAME,
-    Patient_mqtt_Pub_DELETE_Topic,
     patient_publish_query,
-    patient_sub_create
+    patient_subcribe_create,
+    patient_subcribe_delete
 } from '../config.js';
 
 function initialize() {
     const RESPONSE_QOS = 1
 
     //post patient
-    subscribeShared(SUBSCRIPTION_SHARE_NAME, patient_sub_create, async (topic, payload, packet) => {
+    subscribeShared(SUBSCRIPTION_SHARE_NAME, patient_subcribe_create, async (topic, payload, packet) => {
         console.log('Received message:', payload.toString());
 
         try {
@@ -67,7 +64,7 @@ function initialize() {
 
 
     //delete patient with personummer
-    subscribeShared(SUBSCRIPTION_SHARE_NAME, Patient_mqtt_Pub_DELETE_Topic, async (topic, payload, packet) => {
+    subscribeShared(SUBSCRIPTION_SHARE_NAME, patient_subcribe_delete, async (topic, payload, packet) => {
         const patientNummer = JSON.parse(payload.toString()).Personnummer;
         try {
             const patients = await Patient.findOneAndDelete({ Personnummer: patientNummer }).exec();
