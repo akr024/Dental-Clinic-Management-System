@@ -68,14 +68,11 @@ function initialize() {
 
     //delete patient with personummer
     subscribeShared(SUBSCRIPTION_SHARE_NAME, Patient_mqtt_Pub_DELETE_Topic, async (topic, payload, packet) => {
-        console.log('Subscribed to topic: ' + Patient_mqtt_Pub_DELETE_Topic + ' with sub share name ' + SUBSCRIPTION_SHARE_NAME);
-        console.log(payload.toString());
+        const patientNummer = JSON.parse(payload.toString()).Personnummer;
         try {
-            const patients = await Patient.findOneAndDelete({ Personnummer: payload.toString() }).exec();
+            const patients = await Patient.findOneAndDelete({ Personnummer: patientNummer }).exec();
             console.log('Deleted patient with personummer: ', patients);
         } catch (error) {
-            const msg = 'internal server error';
-            publishResponse(packet, JSON.stringify({ success: false, msg }), { qos: RESPONSE_QOS });
             console.error('Error ', error);
         }
     });
