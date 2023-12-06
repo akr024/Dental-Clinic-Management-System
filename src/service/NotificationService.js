@@ -49,7 +49,6 @@ async function sendEmail(object) {
       port: 465,
       secure: true,
       auth: {
-        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
         user: "dentistplatform@gmail.com",
         pass: "DentistPlatform123#",
       },
