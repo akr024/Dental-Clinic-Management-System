@@ -49,8 +49,8 @@ async function sendEmail(object) {
       port: 465,
       secure: true,
       auth: {
-        user: "dentistplatform@gmail.com",
-        pass: "DentistPlatform123#",
+        user: process.env.USER,
+        pass: process.env.PASS,
       },
     });
 
