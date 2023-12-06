@@ -13,7 +13,11 @@ const notificationSchema = mongoose.Schema(
         },
         desc: {
             type: String,
-            required: false
+            required: true
+        },
+        to: {
+            type: String,
+            required: true
         }
     }
 );
