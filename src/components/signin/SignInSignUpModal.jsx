@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 
 import CloseIcon from '@mui/icons-material/Close'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import { IconButton } from '@mui/material'
+import { Alert, IconButton } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -10,6 +10,7 @@ import Link from '@mui/material/Link'
 import Modal from '@mui/material/Modal'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { Api } from '../../Api.js'
 
 const style = {
   display: 'flex',
@@ -47,12 +48,17 @@ function SignInSignUpModal({ open, onClose }) {
   const formRef = useRef();
   const [showSignUpForm, setShowSignUpForm] = useState(false)
 
+  const [showAlert, setShowAlert] = useState(false)
+  const [alertSeverity, setAlertSeverity] = useState('error')
+  const [alertMessage, setAlertMessage] = useState('')
+
   const [signInState, setSignInState] = useState(initialSignInState)
   const [signUpState, setSignUpState] = useState(initialSignUpState)
 
   const closeModal = () => {
     setSignInState(initialSignInState)
     setSignUpState(initialSignUpState)
+    setShowAlert(false)
     onClose()
   }
 
@@ -62,15 +68,26 @@ function SignInSignUpModal({ open, onClose }) {
   const onSubmit = event => {
     event.preventDefault()
 
-    if (formRef.current.reportValidity()) {
+    if (!formRef.current.reportValidity()) {
+      return
+    }
 
-      // TODO: API call first
-      if (showSignUpForm) {
-        setSignUpState(initialSignUpState)
-        setShowSignUpForm(false)
-      } else {
-        closeModal()
-      }
+    if (showSignUpForm) {
+      Api.post('/patients', signUpState)
+        .then(() => {
+          setSignUpState(initialSignUpState)
+          setShowSignUpForm(false)
+          setShowAlert(true)
+          setAlertSeverity('info')
+          setAlertMessage('Account created sucessfully!')
+        }).catch(err => {
+          setShowAlert(true)
+          setAlertSeverity('error')
+          setAlertMessage(`Could not create account: ${err.response.data.msg}`)
+        })
+    } else {
+      // TODO: API call for sign in
+      closeModal()
     }
   }
 
@@ -95,7 +112,6 @@ function SignInSignUpModal({ open, onClose }) {
         value={signInState.password}
         onChange={handleSignInChange}
       />
-      <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Sign In</Button>
     </>
   )
 
@@ -147,7 +163,6 @@ function SignInSignUpModal({ open, onClose }) {
         onChange={handleSignUpChange}
         value={signUpState.email}
       />
-      <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Sign up</Button>
     </>
   )
 
@@ -163,6 +178,8 @@ function SignInSignUpModal({ open, onClose }) {
         <Typography component="h1" variant="h5">{showSignUpForm ? "Sign up" : "Sign in"}</Typography>
         <Box ref={formRef} component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
           {showSignUpForm ? signUpForm : signInForm}
+          {showAlert && <Alert severity={alertSeverity} sx={{ mt: 1 }}>{alertMessage}</Alert>}
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Sign {showSignUpForm ? 'Up' : 'In'}</Button>
           <Link href="#" variant="body2" onClick={() => setShowSignUpForm(prev => !prev)}>
             {showSignUpForm ? "Already have an account? Sign in" : "Don't have an account? Sign Up"}
           </Link>
