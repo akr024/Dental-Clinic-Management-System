@@ -1,45 +1,23 @@
-import createError from 'http-errors';
-import express from 'express';
-import path from 'path';
-import cookieParser from 'cookie-parser';
-import logger from 'morgan';
 import { initializeMqttUsingEnvVariables } from 'mqtt-service';
 //routes
+import mongoose from 'mongoose';
 import patientRouter from './routes/patients.js';
 
 
-const mqttClientService = initializeMqttUsingEnvVariables();
-mqttClientService.on('connect', () => {
-  patientRouter.initialize();
-})
+// Variables
+var mongoURI = process.env.MONGODB_URI || 'mongodb+srv://9groupminiproject:SameGenericPass12345@cluster0.kxbdw4m.mongodb.net/?retryWrites=true&w=majority';
 
-var app = express();
+// Connect to MongoDB
+mongoose
+  .connect(mongoURI)
+  .then(() => {
+    console.log('App connected to database at uri ' + mongoURI);
 
-// set up session
-app.use(cookieParser());
-
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join('public')));
-
-
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-});
-
-export default app;
+    const mqttClientService = initializeMqttUsingEnvVariables();
+    mqttClientService.on('connect', () => {
+      patientRouter.initialize();
+    })
+  })
+  .catch((error) => {
+    console.log(error);
+  });
