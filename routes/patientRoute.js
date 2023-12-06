@@ -15,6 +15,7 @@ try {
         !req.body.email
     ){
         res.status(400).json({msg:'Credentials are missing'})
+        return
     }
         console.log("creating new patient")
         const newPatient = {
