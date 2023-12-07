@@ -4,6 +4,7 @@ import { initializeMqttUsingEnvVariables } from 'mqtt-service';
 import { PORT } from './config.js';
 import clinicRouter from './routes/clinicRoute.js';
 import patientRouter from './routes/patientRoute.js';
+import appointmentRouter from './routes/appointmentRoute.js';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(cors({ origin: /.*/ }));
 
 app.use('/patients', patientRouter)
 app.use('/clinics', clinicRouter)
+app.use('/appointments', appointmentRouter)
 
 console.log('Connecting to mqt broker...')
 const mqttClient = initializeMqttUsingEnvVariables()
