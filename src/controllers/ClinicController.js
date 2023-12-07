@@ -17,9 +17,9 @@ function handleClinicCreate(topic, payload, packet) {
 }
 
 function handleClinicQuery(topic, payload, packet) {
-  // For now just get all, later when search functionallity is
-  // added based on time some query params can be added here
-  ClinicService.queryClinics()
+  const query = JSON.parse(payload)
+
+  ClinicService.queryClinics(query)
     .then(response => publishResponse(packet, JSON.stringify(response), { qos: RESPONSE_QOS }))
 }
 
