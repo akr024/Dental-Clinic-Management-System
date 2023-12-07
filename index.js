@@ -1,7 +1,8 @@
 import express from 'express';
 import {PORT} from './config.js'
 import { initializeMqttUsingEnvVariables } from 'mqtt-service';
-import appointmentModel from './routes/appointment.js'
+import appointment from './routes/appointmentRoute.js'
+import clinic from './routes/clinicRoute.js'
 const app = express();
 
 app.use(express.json());
@@ -10,7 +11,8 @@ app.get('/', (req,res) => {
 })
 
 //routers for schema elements
-app.use('/appointments',appointmentModel)
+app.use('/appointments',appointment)
+app.use('/clinics', clinic)
 
 console.log('Connecting to mqt broker...')
 const mqttClient = initializeMqttUsingEnvVariables()
