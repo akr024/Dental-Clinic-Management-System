@@ -15,13 +15,11 @@ import Brightness7Icon from '@mui/icons-material/Brightness7'
 
 import { useTheme } from '@mui/material/styles'
 
-
 const pages = ['Home', 'Link2', 'About']
 
-function NavBar({ toggleColorMode, onLoginClick }) {
+function NavBar({ toggleColorMode, onSigninClick, onSignoutClick, authenticated }) {
   const theme = useTheme()
 
-  const [authenticated, setAuthenticated] = useState(false);
   const [anchorElementAccount, setAnchorElementAccount] = useState(null)
   const [anchorElementNav, setAnchorElementNav] = useState(null)
 
@@ -33,7 +31,7 @@ function NavBar({ toggleColorMode, onLoginClick }) {
 
   const handleLogOut = () => {
     handleCloseAccountMenu()
-    setAuthenticated(false)
+    onSignoutClick()
   }
 
   return (
@@ -79,7 +77,7 @@ function NavBar({ toggleColorMode, onLoginClick }) {
             </IconButton>
           </Box>
 
-          {!authenticated ? (<Button color="inherit" onClick={onLoginClick}>Login</Button>) : (
+          {!authenticated ? (<Button color="inherit" onClick={onSigninClick}>Login</Button>) : (
             <div>
               <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleAccountMenu} color="inherit" >
                 <AccountCircle />

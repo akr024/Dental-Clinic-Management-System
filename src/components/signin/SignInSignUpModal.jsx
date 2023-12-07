@@ -177,7 +177,7 @@ function SignInSignUpModal({ open, onClose }) {
         <Typography component="h1" variant="h5">{showSignUpForm ? "Sign up" : "Sign in"}</Typography>
         <Box ref={formRef} component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
           {showSignUpForm ? signUpForm : signInForm}
-          {showAlert && <Alert severity={alertSeverity} sx={{ mt: 1 }}>{alertMessage}</Alert>}
+          {showAlert && <Alert severity={alertSeverity} sx={{ mt: 1 }} variant="outlined">{alertMessage}</Alert>}
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Sign {showSignUpForm ? 'Up' : 'In'}</Button>
           <Link href="#" variant="body2" onClick={() => setShowSignUpForm(prev => !prev)}>
             {showSignUpForm ? "Already have an account? Sign in" : "Don't have an account? Sign Up"}
