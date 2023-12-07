@@ -3,7 +3,10 @@ import { Clinic } from '../models/ClinicModel.js'
 
 import { isFuture, subHours } from 'date-fns'
 
-const MIN_HOURS_AHEAD = 1
+import mongoose from 'mongoose'
+
+const MIN_HOURS_BEFORE_APPOINTMENT_CREATION = 2
+const MIN_HOURS_BEFORE_BOOKING = 1
 
 async function createAppointment(inputAppointment) {
   try {
@@ -13,8 +16,8 @@ async function createAppointment(inputAppointment) {
 
     const dateTime = new Date(inputAppointment.dateTime)
 
-    if (!isFuture(subHours(dateTime, MIN_HOURS_AHEAD))) {
-      return { success: false, msg: `appointment must be created at least ${MIN_HOURS_AHEAD} hour in advance` }
+    if (!isFuture(subHours(dateTime, MIN_HOURS_BEFORE_APPOINTMENT_CREATION))) {
+      return { success: false, msg: `appointment must be created at least ${MIN_HOURS_BEFORE_APPOINTMENT_CREATION} hour in advance` }
     }
 
     const clinic = await Clinic.findById(inputAppointment.clinicId)
@@ -27,7 +30,7 @@ async function createAppointment(inputAppointment) {
       clinicId: inputAppointment.clinicId,
       dentistId: inputAppointment.dentistId,
       dateTime: dateTime
-    });
+    })
 
     const savedAppointment = await newAppointment.save();
 
@@ -41,6 +44,38 @@ async function createAppointment(inputAppointment) {
   }
 }
 
+async function bookAppointment(input) {
+  const session = await mongoose.startSession()
+  session.startTransaction()
+
+  try {
+    const appointment = await Appointment.findById(input.appointmentId)
+
+    if (!appointment || !isAppointmentAvailable(appointment)) {
+      return { result: false, msg: 'appointment no longer available' }
+    }
+
+    appointment.patientId = input.patientId
+
+    await appointment.save()
+    await session.commitTransaction()
+
+    return { success: true }
+  } catch (err) {
+    console.log(err.stack)
+    await session.abortTransaction()
+    return { success: false, msg: 'internal server error' }
+  } finally {
+    session.endSession()
+  }
+}
+
+function isAppointmentAvailable(appointment) {
+  return appointment.patientId == null && isFuture(subHours(appointment.dateTime, MIN_HOURS_BEFORE_BOOKING))
+}
+
 export default {
   createAppointment,
+  bookAppointment,
+  MIN_HOURS_BEFORE_BOOKING
 }
