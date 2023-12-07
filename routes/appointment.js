@@ -9,7 +9,6 @@ router.post('/', async (req,res) => {
         if( 
             //!req.body.dateTime||
             !req.body.clinicId||
-            !req.body.patientId||
             !req.body.dentistId
             ){
             res.status(400).json({msg:'Date and time is missing'})
@@ -17,8 +16,7 @@ router.post('/', async (req,res) => {
             console.log("creating new appointment")
             const newAppointment = {
                 clinicId: req.body.clinicId,
-                dentistId: req.body.dentistId,
-                patientId: req.body.patientId,
+                dentistId: req.body.dentistId, //temporary placeholder
                 dateTime: req.body.dateTime
             }
             publishAwaitingResponse(appointment_publish_create,JSON.stringify(newAppointment),(topic,payload,packet)=>{
