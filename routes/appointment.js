@@ -7,7 +7,7 @@ router.post('/', async (req,res) => {
     try {
         console.log("entering if loop")
         if( 
-            //!req.body.dateTime||
+            !req.body.dateTime||
             !req.body.clinicId||
             !req.body.dentistId
             ){
