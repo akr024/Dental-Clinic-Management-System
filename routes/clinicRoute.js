@@ -12,7 +12,7 @@ try {
         !req.body.name ||
         !req.body.address
     ){
-        res.status(400).json({msg:'Name and address'})
+        res.status(400).json({msg:'Name and address required'})
     }else{
         console.log('creating new clinic')
         const newClinic = {
@@ -23,7 +23,7 @@ try {
     
             const response = JSON.parse(payload.toString())
             if(response.success){
-                res.status(201).json({clinic: response.clinic})
+               res.status(201).json(response.clinic)
             } else{
                 res.status(400).json({msg: response.msg})
             }      
