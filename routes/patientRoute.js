@@ -17,7 +17,6 @@ try {
         res.status(400).json({msg:'Credentials are missing'})
         return
     }
-        console.log("creating new patient")
         const newPatient = {
             Personnummer: req.body.Personnummer,
             Firstname: req.body.Firstname,
