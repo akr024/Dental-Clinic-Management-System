@@ -11,7 +11,8 @@ var mongoURI = process.env.MONGODB_URI || 'mongodb+srv://9groupminiproject:SameG
 mongoose
   .connect(mongoURI)
   .then(() => {
-    console.log('App connected to database at uri ' + mongoURI);
+    console.log(`App connected to \x1b[32mMONGODB\x1b[0m`);
+
 
     const mqttClientService = initializeMqttUsingEnvVariables();
     mqttClientService.on('connect', () => {
