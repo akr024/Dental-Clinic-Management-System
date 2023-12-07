@@ -30,15 +30,15 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
       const availableAppointments = selectedClinic.appointments
         .filter(e => e.available)
 
-      const firstAvailableTime = availableAppointments
-        .map(e => new Date(e.time))
+      const firstAvailableTime = availableAppointments.length === 0 ? new Date() : availableAppointments
+        .map(e => new Date(e.dateTime))
         .reduce((a, b) => a < b ? a : b)
 
       setDate(firstAvailableTime)
 
       const map = new Map()
       availableAppointments.forEach(appointment => {
-        const date = new Date(appointment.time).toLocaleDateString()
+        const date = new Date(appointment.dateTime).toLocaleDateString()
         if (!map.has(date)) {
           map.set(date, [appointment])
         } else {
@@ -91,7 +91,7 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
             <CloseIcon />
           </IconButton>
 
-          {lastSelectedClinic.current ? <ClinicInfoHeader data={lastSelectedClinic.current} /> : <></>}
+          {lastSelectedClinic.current ? <ClinicInfoHeader clinic={lastSelectedClinic.current} /> : <></>}
 
           <Tabs centered variant="fullWidth" value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
             <Tab label="Appointments" />
@@ -117,11 +117,11 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
                       <Button
                         variant="outlined"
                         size="small"
-                        key={e.id}
+                        key={e._id}
                         sx={{ m: 1 }}
                         onClick={() => onBookAppointment(e)}
                       >
-                        {new Date(e.time).toLocaleTimeString('en-GB', { hour: 'numeric', minute: 'numeric' })}
+                        {new Date(e.dateTime).toLocaleTimeString('en-GB', { hour: 'numeric', minute: 'numeric' })}
                       </Button>
                     ))
                   :

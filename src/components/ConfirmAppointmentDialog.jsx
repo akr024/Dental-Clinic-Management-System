@@ -12,7 +12,7 @@ function ConfirmAppointmentDialog({ open, onClose, appointment }) {
       <DialogContent>
         <DialogContentText id="alertDialogDescription">
           {`Would you like to book the appointment at `}
-          {appointment && new Date(appointment.time).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' })}?
+          {appointment && new Date(appointment.dateTime).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' })}?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
