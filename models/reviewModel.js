@@ -1,19 +1,14 @@
-import mongoose, { mongo } from "mongoose";
+import { Schema, model } from "mongoose";
 
-const reviewSchema = mongoose.Schema(
-{
-    text:{
-        type: String,
-        required: true
-    },
-    rating:{
+const reviewSchema = Schema({
+    clinicId: { type: Schema.Types.ObjectId, required: true, ref: 'clinic' },
+    patientId: { type: Schema.Types.ObjectId, required: false },
+    reviewMsg: { type: String, requireed: true },
+    dateTime: { type: Date },
+    rating: {
         type: Number,
         required: true
-    },
-    clinicID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'clinic'
-      }
+    }
 });
 
-export const Review = mongoose.model('review',reviewSchema);
+export const Review = model('review', reviewSchema);
