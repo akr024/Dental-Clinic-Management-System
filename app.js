@@ -5,6 +5,7 @@ import { initializeMqttUsingEnvVariables } from 'mqtt-service';
 
 import AppointmentController from './src/controllers/AppointmentController.js';
 import ClinicController from './src/controllers/ClinicController.js';
+import ReviewController from './src/controllers/ReviewController.js';
 
 dotenv.config();
 
@@ -26,6 +27,8 @@ const mqttClient = initializeMqttUsingEnvVariables()
 mqttClient.on('connect', () => {
   console.log('Connected to mqtt broker')
 
-  ClinicController.initialize()
-  AppointmentController.initialize()
+  ClinicController.initialize();
+  AppointmentController.initialize();
+  ReviewController.initialize();
+
 })
