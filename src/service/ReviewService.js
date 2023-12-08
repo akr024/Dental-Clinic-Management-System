@@ -37,13 +37,18 @@ async function createReview(review) {
 }
 
 async function queryReview(query) {
-    return Clinic.findById(query.clinicId)
-        .select('_id name address review')
-        .populate({
-            path: 'review'
-        })
-        .then(result => ({ success: true, clinics: result }))
-
+    try {
+        const clinicId = query.clinicId;
+        const clinic = await Clinic.findById(clinicId)
+        if (!clinic) {
+            return { success: false, message: 'Clinic not found' };
+        }
+        const reviews = await Review.find({ clinicId: clinicId })
+            .select('reviewMsg dateTime rating ')
+        return { success: true, reviews: reviews };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
 }
 
 export default {
