@@ -4,7 +4,7 @@ import { Clinic } from '../models/ClinicModel.js'
 import GoogleGeocodeService from './GoogleGeocodeService.js'
 import { max } from 'date-fns';
 
-const MIN_HOURS_BEFORE_BOOKING = 1
+import AppointmentService from './AppointmentService.js'
 
 async function createClinic(inputClinic) {
   if (!inputClinic?.name || !inputClinic?.address) {
@@ -49,7 +49,7 @@ async function queryClinics(query) {
       .then(result => ({ success: true, clinics: result }))
   }
 
-  const latestAvailabilityDate = addHours(new Date(), MIN_HOURS_BEFORE_BOOKING)
+  const latestAvailabilityDate = addHours(new Date(), AppointmentService.MIN_HOURS_BEFORE_BOOKING)
 
   const matchStage = { $match: {} }
 
