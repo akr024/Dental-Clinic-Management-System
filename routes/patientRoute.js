@@ -8,9 +8,9 @@ const router = express.Router()
 router.post('/',async(req,res)=>{
 try {
     if(
-        !req.body.Personnummer||
-        !req.body.Firstname||
-        !req.body.Lastname||
+        !req.body.personnummer||
+        !req.body.firstName||
+        !req.body.lastName||
         !req.body.password||
         !req.body.email
     ){
@@ -18,9 +18,9 @@ try {
         return
     }
         const newPatient = {
-            Personnummer: req.body.Personnummer,
-            Firstname: req.body.Firstname,
-            Lastname: req.body.Lastname,
+            Personnummer: req.body.personnummer,
+            Firstname: req.body.firstName,
+            Lastname: req.body.lastName,
             password: req.body.password,
             email: req.body.email
         }
