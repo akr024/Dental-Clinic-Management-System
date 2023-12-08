@@ -13,16 +13,21 @@ async function createClinic(inputClinic) {
 
   const addressValidationResult = await GoogleGeocodeService.validateAddress(inputClinic.address)
 
-  if (!addressValidationResult.success) {
-    return { success: false, msg: addressValidationResult.msg }
-  }
-
-  try {
-    const newClinic = new Clinic({
+  let clinicData
+  if (addressValidationResult.success) {
+    clinicData = {
       name: inputClinic.name,
       address: addressValidationResult.formattedAddress,
       position: addressValidationResult.position
-    })
+    }
+  } else if (inputClinic.position?.lat && inputClinic.position?.lng) {
+    clinicData = inputClinic
+  } else {
+    return { success: false, msg: 'Could not validate address. You can provide coordinates with position.lat and position.lng' }
+  }
+
+  try {
+    const newClinic = new Clinic(clinicData)
 
     const savedClinic = await newClinic.save()
 
