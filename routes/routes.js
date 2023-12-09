@@ -11,14 +11,14 @@ router.post(
       async (err, user, info) => {
         try {
           if (err) {          
-            return res.status(410).json({
+            return res.status(401).json({
                             error: err.message,
                           });
           }
           if (!user) {
             const error = new Error('Invalid credentials');
           
-            return res.status(411).json({
+            return res.status(401).json({
                             error: error.message,
                           });
           }
