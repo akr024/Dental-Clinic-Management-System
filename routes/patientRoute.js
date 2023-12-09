@@ -1,5 +1,5 @@
 import {initializeMqttUsingEnvVariables,publishAwaitingResponse, subscribe} from 'mqtt-service'
-import {patient_publish_create, patient_publish_query, patient_subscribe_create} from '../config.js'
+import {patient_publish_create, patient_publish_delete, patient_publish_query, patient_subscribe_create} from '../config.js'
 import express from 'express'
 const router = express.Router()
 
@@ -17,7 +17,6 @@ try {
         res.status(400).json({msg:'Credentials are missing'})
         return
     }
-        console.log("creating new patient")
         const newPatient = {
             Personnummer: req.body.personnummer,
             Firstname: req.body.firstName,
@@ -55,6 +54,20 @@ router.get('/:Personnummer',async(req,res)=>{
 
     })
 })
-
+router.delete('/:Personnummer',async(req,res)=>{
+    const patientNumber = req.params.Personnummer
+    try {
+        publishAwaitingResponse(patient_publish_delete,JSON.stringify({Personnummer:patientNumber})),(topic,payload,packet)=>{
+            const response = JSON.parse(payload.toString())
+            if(response.success){
+                res.status(201).json(response)
+            } else{
+                res.status(400).json(response.msg)
+            }
+        }
+    } catch (error) {
+        return res.status(500).json({msg:'patient deletion unsuccessful'})
+    }
+    })
 
  export default router
