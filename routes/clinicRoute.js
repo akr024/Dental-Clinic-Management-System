@@ -3,6 +3,9 @@ import { publishAwaitingResponse } from 'mqtt-service'
 
 const TOPIC_CLINIC_QUERY = 'clinic/query'
 
+const TOPIC_REVIEW_QUERY = 'review/querry'
+
+
 const router = express.Router()
 
 router.get('/', async (req, res) => {
@@ -34,6 +37,23 @@ router.get('/', async (req, res) => {
     console.log(error.stack)
     return res.status(500).json({ msg: 'internal server error' })
   }
+})
+
+router.get('/:id/reviews', async (req, res) => {
+
+  const clinicID = req.params.id
+
+  publishAwaitingResponse(TOPIC_REVIEW_QUERY, JSON.stringify({ clinicId: clinicID }), (topic, payload, packet) => {
+
+    const response = JSON.parse(payload.toString())
+    console.log(response);
+    if (response.success) {
+      res.status(201).json(response)
+    } else {
+      res.status(400).json(response.msg)
+    }
+
+  })
 })
 
 export default router
