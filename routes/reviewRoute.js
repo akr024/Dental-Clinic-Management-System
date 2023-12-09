@@ -4,7 +4,6 @@ const router = express.Router()
 
 const TOPIC_REVIEW_CREATE = 'review/create'
 
-const TOPIC_REVIEW_QUERY = 'review/querry'
 
 router.post('/', async (req, res) => {
     try {
@@ -12,9 +11,10 @@ router.post('/', async (req, res) => {
             !req.body.clinicId ||
             !req.body.patientId ||
             !req.body.reviewMsg ||
-            !req.body.rating
+            !req.body.rating ||
+            req.body.rating < 0 || req.body.rating > 5
         ) {
-            res.status(400).json({ msg: 'Input data required' })
+            res.status(400).json({ msg: res })
             return
         }
         const newReview = {
@@ -38,23 +38,6 @@ router.post('/', async (req, res) => {
     } catch (error) {
         return res.status(500).json({ msg: 'review creation unsuccessful' })
     }
-})
-
-router.get('/clinics/:id', async (req, res) => {
-
-    const clinicID = req.params.id
-
-    publishAwaitingResponse(TOPIC_REVIEW_QUERY, JSON.stringify({ clinicId: clinicID }), (topic, payload, packet) => {
-
-        const response = JSON.parse(payload.toString())
-        console.log(response);
-        if (response.success) {
-            res.status(201).json(response)
-        } else {
-            res.status(400).json(response.msg)
-        }
-
-    })
 })
 
 
