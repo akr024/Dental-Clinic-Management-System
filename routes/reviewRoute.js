@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
             !req.body.rating ||
             req.body.rating < 0 || req.body.rating > 5
         ) {
-            res.status(400).json({ msg: res })
+            res.status(400).json({ msg: 'input data required or invalid input data' })
             return
         }
         const newReview = {
