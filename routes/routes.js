@@ -1,20 +1,8 @@
 const express = require('express');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const UserModel = require('../models/User');
-
 const router = express.Router();
 
-router.post(
-  '/signup',
-  passport.authenticate('signup', { session: false }),
-  async (req, res, next) => {
-    res.json({
-      message: 'Signup successful',
-      user: req.user,
-    });
-  }
-);
 router.post(
   '/login',
   async (req, res, next) => {
@@ -22,10 +10,17 @@ router.post(
       'login',
       async (err, user, info) => {
         try {
-          if (err || !user) {
-            const error = new Error('An error occurred.');
-
-            return next(error);
+          if (err) {          
+            return res.status(410).json({
+                            error: err.message,
+                          });
+          }
+          if (!user) {
+            const error = new Error('Invalid credentials');
+          
+            return res.status(411).json({
+                            error: error.message,
+                          });
           }
 
           req.login(
@@ -34,8 +29,8 @@ router.post(
             async (error) => {
               if (error) return next(error);
 
-              const body = { _id: user._id, personnummer: user.personnummer };
-              const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
+              const body = { _id: user._id, email: user.email };
+              const token = jwt.sign({ user: body }, 'TOP_SECRET');
 
               return res.json({ token });
             }
