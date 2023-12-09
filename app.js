@@ -14,6 +14,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 
 app.use(bodyParser.json());
+app.use(cors({ origin: /.*/ }));
 
 app.use('/api/auth', authRouter);
 
