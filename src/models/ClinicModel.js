@@ -6,7 +6,7 @@ const clinicSchema = Schema({
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },
   },
-  address: { type: String },
+  address: { type: String, required: true },
   appointments: [{ type: Schema.Types.ObjectId, ref: 'appointment' }],
   review: [{ type: Schema.Types.ObjectId, ref: 'review' }]
 
