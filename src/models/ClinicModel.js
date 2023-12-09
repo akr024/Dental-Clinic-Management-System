@@ -3,8 +3,8 @@ import { Schema, model } from "mongoose";
 const clinicSchema = Schema({
   name: { type: String, required: true, unique: true },
   position: {
-    lat: { type: Number },
-    lng: { type: Number },
+    lat: { type: Number, required: true },
+    lng: { type: Number, required: true },
   },
   address: { type: String },
   appointments: [{ type: Schema.Types.ObjectId, ref: 'appointment' }],
