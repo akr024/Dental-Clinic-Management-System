@@ -63,7 +63,7 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
         right: 0,
         height: { xs: '60%', md: '100%' },
         display: { xs: 'flex', md: 'flex' },
-        width: { xs: '100%', md: '325px' },
+        width: { xs: '100%', md: '375px' },
         alignItems: 'flex-end',
         pointerEvents: 'none',
         zIndex: 1001
@@ -80,7 +80,7 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
             m: { xs: 0, md: 3 },
             p: 3,
             position: 'relative',
-            width: { xs: '100%', md: '325px' },
+            width: { xs: '100%' },
             height: { xs: '100%', md: '80%' },
             display: 'flex',
             flexDirection: 'column',

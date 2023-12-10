@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import CloseIcon from '@mui/icons-material/Close'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
@@ -10,7 +10,10 @@ import Link from '@mui/material/Link'
 import Modal from '@mui/material/Modal'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { Api } from '../../Api.js'
+import { Api, AuthApi } from '../../Api.js'
+
+const PERSONNUMMER_INPUT_PATTERN = /^((\d{6,8}-?\d{0,4})|(\d{0,12}))$/;
+const PERSONNUMMER_SUBMIT_PATTERN = /^(\d{6}|\d{8})-?\d{4}$/
 
 const style = {
   display: 'flex',
@@ -54,6 +57,12 @@ function SignInSignUpModal({ open, onClose }) {
   const [signInState, setSignInState] = useState(initialSignInState)
   const [signUpState, setSignUpState] = useState(initialSignUpState)
 
+  const [personnummerError, setPersonnummerError] = useState(false)
+
+  useEffect(() => {
+    setPersonnummerError(false)
+  }, [showSignUpForm])
+
   const closeModal = () => {
     setSignInState(initialSignInState)
     setSignUpState(initialSignUpState)
@@ -64,10 +73,25 @@ function SignInSignUpModal({ open, onClose }) {
   const handleSignInChange = e => setSignInState(prev => ({ ...prev, [e.target.name]: e.target.value }))
   const handleSignUpChange = e => setSignUpState(prev => ({ ...prev, [e.target.name]: e.target.value }))
 
+  const validateForm = () => {
+    // First check if required fields are present, having both types of warnings pop up seems confusing
+    if (!formRef.current.reportValidity()) {
+      return false
+    }
+
+    const personnummer = showSignUpForm ? signUpState.personnummer : signInState.personnummer
+    const validPersonnummer = PERSONNUMMER_SUBMIT_PATTERN.test(personnummer)
+
+    setPersonnummerError(!validPersonnummer)
+
+    return validPersonnummer
+  }
+
   const onSubmit = event => {
     event.preventDefault()
+    setShowAlert(false)
 
-    if (!formRef.current.reportValidity()) {
+    if (!validateForm()) {
       return
     }
 
@@ -82,11 +106,19 @@ function SignInSignUpModal({ open, onClose }) {
         }).catch(err => {
           setShowAlert(true)
           setAlertSeverity('error')
-          setAlertMessage(`Could not create account: ${err.response.data.msg}`)
+          setAlertMessage(`Could not create account: ${err?.response?.data?.msg ? err.response.data.msg : 'server unreachable'}`)
         })
     } else {
-      // TODO: API call for sign in
-      closeModal()
+      AuthApi.post('/login', signInState)
+        .then(() => {
+          setSignInState(initialSignInState)
+          setShowAlert(false)
+          closeModal()
+        }).catch(err => {
+          setShowAlert(true)
+          setAlertSeverity('error')
+          setAlertMessage(`Could not sing in: ${err?.response?.data?.error ? err.response.data.error : 'server unreachable'}`)
+        })
     }
   }
 
@@ -99,7 +131,9 @@ function SignInSignUpModal({ open, onClose }) {
         name="personnummer"
         label="Personnummer"
         value={signInState.personnummer}
-        onChange={handleSignInChange}
+        onChange={e => setSignInState({...signInState, personnummer: PERSONNUMMER_INPUT_PATTERN.test(e.target.value) ? e.target.value : signInState.personnummer})}
+        error={personnummerError}
+        helperText={personnummerError ? 'Incorrect format' : null}
       />
       <TextField
         margin="normal"
@@ -122,8 +156,10 @@ function SignInSignUpModal({ open, onClose }) {
         fullWidth
         name="personnummer"
         label="Personnummer"
-        onChange={handleSignUpChange}
+        onChange={e => setSignUpState({...signUpState, personnummer: PERSONNUMMER_INPUT_PATTERN.test(e.target.value) ? e.target.value : signUpState.personnummer})}
         value={signUpState.personnummer}
+        error={personnummerError}
+        helperText={personnummerError ? 'Incorrect format' : null}
       />
       <TextField
         margin="normal"
