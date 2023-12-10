@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Box, CssBaseline } from '@mui/material'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -14,7 +14,7 @@ import GoogleMapComponent from './components/map/GoogleMapComponent.jsx'
 import NavBar from './components/navbar/NavBar.jsx'
 import SignInSignUpModal from './components/signin/SignInSignUpModal'
 
-import { Api } from './Api.js'
+import { Api, getSecondsBeforeJwtExpires, isAuthenticated, signOut } from './Api.js'
 
 function App() {
   const [signInModalOpen, setSignInModalOpen] = useState(false)
@@ -23,7 +23,7 @@ function App() {
   const [colorMode, setColorMode] = useState('light')
   const [selectedClinic, setSelectedClinic] = useState(null)
   const [selectedAppointment, setSelectedAppointment] = useState(null)
-  const [authenticated, setAuthenticated] = useState(false) // temporary, remove when authentication is implemented
+  const [authenticated, setAuthenticated] = useState(isAuthenticated())
   const [appointmentConfirmationDialogOpen, setAppointmentConfirmationDialogOpen] = useState(false)
   const [appointmentState, setAppointmentState] = useState(BookingStates.PENDING)
 
@@ -33,7 +33,18 @@ function App() {
     }
   }), [colorMode]);
 
-  const isAuthenticated = () => authenticated
+  const authTimeoutIdRef = useRef()
+  
+  useEffect(() => {
+    if (authTimeoutIdRef.current) {
+      clearTimeout(authTimeoutIdRef.current)
+    }
+
+    if (authenticated) {
+      // TODO: maybe show a "session expired" dialog or something later on
+      authTimeoutIdRef.current = setTimeout(() => setAuthenticated(false), getSecondsBeforeJwtExpires() * 1000)
+    }
+  }, [authenticated])
 
   const onSearchClick = (from, to) => {
     setSelectedClinic(null)
@@ -78,10 +89,13 @@ function App() {
 
   const onSignIn = () => {
     setSignInModalOpen(false)
-    setAuthenticated(true)
+    setAuthenticated(isAuthenticated())
   }
 
-  const onSignoutClick = () => setAuthenticated(false)
+  const onSignoutClick = () => {
+    setAuthenticated(false)
+    signOut()
+  }
 
   const toggleColorMode = () => setColorMode(theme.palette.mode === 'dark' ? 'light' : 'dark')
 
@@ -90,7 +104,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-          <NavBar authenticated={isAuthenticated()} toggleColorMode={toggleColorMode} onSigninClick={() => setSignInModalOpen(true)} onSignoutClick={onSignoutClick} />
+          <NavBar authenticated={authenticated} toggleColorMode={toggleColorMode} onSigninClick={() => setSignInModalOpen(true)} onSignoutClick={onSignoutClick} />
           <Box sx={{ display: 'flex', height: { xs: 'inherit', md: '100%' }, flexDirection: { xs: 'column', md: 'row' }, overflow: 'hidden', position: 'relative' }}>
             <GoogleMapComponent clinicData={clinicData} selectedClinic={selectedClinic} onMarkerClick={onClinicSelect}>
               <ClinicDetailsComponent selectedClinic={selectedClinic} onBookAppointment={onBookAppointment} />
