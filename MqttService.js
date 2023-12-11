@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import { connect } from 'mqtt'
+import crypto from 'crypto'
 
 dotenv.config()
 
