@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
         }
         const newReview = {
             clinicId: req.body.clinicId,
-            patientId: req.body.patientId,
+            patientId: req.user._id,
             reviewMsg: req.body.reviewMsg,
             rating: req.body.rating,
             dateTime: req.body.dateTime

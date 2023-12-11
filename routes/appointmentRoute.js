@@ -9,9 +9,8 @@ router.post('/:id/book', async (req, res) => {
   try {
     const query = {
       appointmentId: req.params.id,
-      patientId: '6218a733aae7fc7357dbdf1a' // placeholder, replace with id from JWT
+      patientId: req.user._id
     }
-
     publishAwaitingResponse(TOPIC_APPOINTMENT_BOOK, JSON.stringify(query), (topic, payload, packet) => {
       let response = JSON.parse(payload.toString())
       if (response.success) {
