@@ -1,15 +1,15 @@
 import { publishAwaitingResponse } from 'mqtt-service'
 import express from 'express'
+import passport from '../utils/authConfig.js';
 const router = express.Router()
 
 const TOPIC_REVIEW_CREATE = 'review/create'
 
 
-router.post('/', async (req, res) => {
+router.post('/',passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         if (
             !req.body.clinicId ||
-            !req.body.patientId ||
             !req.body.reviewMsg ||
             !req.body.rating ||
             req.body.rating < 0 || req.body.rating > 5
@@ -36,6 +36,7 @@ router.post('/', async (req, res) => {
         })
 
     } catch (error) {
+        console.log("error is",error)
         return res.status(500).json({ msg: 'review creation unsuccessful' })
     }
 })

@@ -6,16 +6,16 @@ import clinicRouter from './routes/clinicRoute.js';
 import patientRouter from './routes/patientRoute.js';
 import appointmentRouter from './routes/appointmentRoute.js';
 import reviewRouter from './routes/reviewRoute.js';
-import passport from './utils/authConfig.js';
+
 const app = express();
 
 app.use(express.json());
 app.use(cors({ origin: /.*/ }));
 
-app.use('/patients', patientRouter) 
-app.use('/clinics', clinicRouter) // ask if we need to authenticate
-app.use('/appointments',passport.authenticate('jwt', { session: false }), appointmentRouter)
-app.use('/reviews', passport.authenticate('jwt', { session: false }), reviewRouter)
+app.use('/patients', patientRouter) //does the patient have to authenticate when creating themselves?
+app.use('/clinics', clinicRouter)
+app.use('/appointments', appointmentRouter)
+app.use('/reviews', reviewRouter)
 
 console.log('Connecting to mqt broker...')
 const mqttClient = initializeMqttUsingEnvVariables()
