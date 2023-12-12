@@ -1,11 +1,10 @@
 import express from 'express'
 import {publishAwaitingResponse} from 'mqtt-service'
-import { dentist_publish_create } from '../config.js'
+import { TOPIC_DENTIST_CREATE } from '../config.js'
 const router = express.Router();
 
 router.post('/',async(req,res)=>{
     try {
-        onsole.log('entering if loop');
     if(
         !req.body.Personnummer ||
         !req.body.Firstname ||
@@ -15,7 +14,6 @@ router.post('/',async(req,res)=>{
     ){
         res.status(400).json({msg:'Credentials missing'})
     } else{
-        console.log('creating new Dentist')
         const newDentist = {
             Personnummer: req.body.Personnummer,
             Firstname: req.body.Firstname,
@@ -23,7 +21,8 @@ router.post('/',async(req,res)=>{
             password: req.body.password,
             email: req.body.email
         }
-        publishAwaitingResponse(dentist_publish_create,JSON.stringify(newDentist),(topic,payload,packet)=>{
+        publishAwaitingResponse(TOPIC_DENTIST_CREATE,JSON.stringify(newDentist),(topic,payload,packet)=>{
+            console.log('\x1b[95m%s\x1b[0m', '[Dentist JSON object sent from dentist API..]');
             const response = JSON.parse(payload.toString())
             if(response.success){
                res.status(201).json(response.clinic)
@@ -33,7 +32,7 @@ router.post('/',async(req,res)=>{
         })
     }
     } catch (error) {
-        res.status(400).json({msg: error})
+        res.status(400).json({msg: 'dentist creation unsuccessful'})
     }
 
 })
