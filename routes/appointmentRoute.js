@@ -1,17 +1,16 @@
 import express from 'express'
 import { publishAwaitingResponse } from 'mqtt-service'
-
+import passport from '../utils/authConfig.js';
 const TOPIC_APPOINTMENT_BOOK = 'appointment/book'
 
 const router = express.Router()
 
-router.post('/:id/book', async (req, res) => {
+router.post('/:id/book',passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const query = {
       appointmentId: req.params.id,
-      patientId: '6218a733aae7fc7357dbdf1a' // placeholder, replace with id from JWT
+      patientId: req.user._id
     }
-
     publishAwaitingResponse(TOPIC_APPOINTMENT_BOOK, JSON.stringify(query), (topic, payload, packet) => {
       let response = JSON.parse(payload.toString())
       if (response.success) {

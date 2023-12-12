@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: /.*/ }));
 
-app.use('/patients', patientRouter)
+app.use('/patients', patientRouter) //does the patient have to authenticate when creating themselves?
 app.use('/clinics', clinicRouter)
 app.use('/appointments', appointmentRouter)
 app.use('/reviews', reviewRouter)

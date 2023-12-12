@@ -1,6 +1,6 @@
 import express from 'express'
 import { publishAwaitingResponse } from 'mqtt-service'
-
+import passport from '../utils/authConfig.js';
 const TOPIC_CLINIC_QUERY = 'clinic/query'
 
 const TOPIC_REVIEW_QUERY = 'review/querry'

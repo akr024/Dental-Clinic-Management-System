@@ -1,6 +1,8 @@
 import {initializeMqttUsingEnvVariables,publishAwaitingResponse, subscribe} from 'mqtt-service'
 import {patient_publish_create, patient_publish_delete, patient_publish_query, patient_subscribe_create} from '../config.js'
 import express from 'express'
+import passport from '../utils/authConfig.js';
+
 const router = express.Router()
 
 
@@ -42,7 +44,6 @@ try {
 router.get('/:Personnummer',async(req,res)=>{
 
     const patientNumber = req.params.Personnummer
-
     publishAwaitingResponse(patient_publish_query,JSON.stringify({Personnummer:patientNumber}),(topic,payload,packet)=>{
 
         const response = JSON.parse(payload.toString())
