@@ -40,20 +40,7 @@ try {
     return res.status(500).json({msg:'patient creation unsuccessful'})
 }
 })
-router.get('/me', passport.authenticate('jwt', { session: false }), async(req,res)=>{
 
-    const patientNumber = req.user._id
-    publishAwaitingResponse(patient_publish_query,JSON.stringify({Personnummer:patientNumber}),(topic,payload,packet)=>{
-
-        const response = JSON.parse(payload.toString())
-            if(response.success){
-                res.status(201).json(response)
-            } else{
-                res.status(400).json(response.msg)
-            }   
-
-    })
-})
 router.get('/:Personnummer',async(req,res)=>{
 
     const patientNumber = req.params.Personnummer

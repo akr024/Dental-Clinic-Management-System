@@ -8,7 +8,7 @@ const TOPIC_REVIEW_QUERY = 'review/querry'
 
 const router = express.Router()
 
-router.get('/',passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const query = { appointments: {} }
 
@@ -39,7 +39,7 @@ router.get('/',passport.authenticate('jwt', { session: false }), async (req, res
   }
 })
 
-router.get('/:id/reviews',passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.get('/:id/reviews', async (req, res) => {
 
   const clinicID = req.params.id
 
