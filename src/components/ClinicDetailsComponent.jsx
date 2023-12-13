@@ -24,7 +24,7 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
     setOpen(selectedClinic != null)
     setTabValue(0)
 
-    if (selectedClinic) {
+    if (selectedClinic && selectedClinic?._id !== lastSelectedClinic?._id) {
       lastSelectedClinic.current = selectedClinic
 
       const availableAppointments = selectedClinic.appointments
