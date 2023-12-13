@@ -6,10 +6,10 @@ const router = express.Router();
 router.post('/',async(req,res)=>{
     try {
     if(
-        !req.body.Personnummer ||
-        !req.body.Firstname ||
-        !req.body.Lastname ||
-        !req.body.password ||
+        !req.body.personnummer||
+        !req.body.firstName||
+        !req.body.lastName||
+        !req.body.password||
         !req.body.email
     ){
         res.status(400).json({msg:'Credentials missing'})
