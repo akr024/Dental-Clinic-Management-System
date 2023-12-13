@@ -73,14 +73,14 @@ function App() {
       setAppointmentConfirmationDialogOpen(true)
       setAppointmentState(BookingStates.PENDING)
 
-      Api.post(`/appointments/${selectedAppointment.id}/book`)
+      Api.post(`/appointments/${selectedAppointment._id}/book`)
         .then(() => {
           setAppointmentState(BookingStates.CONFIRMED)
 
           // Remove the appointment from the list. Need to find the reference because selectedClinic is a copy
           const clinic = clinicData.find(e => e._id === selectedClinic._id)
           const appointmentIndex = clinic.appointments.findIndex(e => e._id === selectedAppointment._id)
-          clinic.appointments.splice(appointmentIndex, 1);
+          clinic.appointments.splice(appointmentIndex, 1)
           setSelectedClinic(clinic)
         })
         .catch(() => setAppointmentState(BookingStates.FAILED))
