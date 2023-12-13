@@ -122,6 +122,11 @@ function SignInSignUpModal({ open, onClose }) {
     }
   }
 
+  const toggleForm = () => {
+    setShowSignUpForm(prev => !prev)
+    setShowAlert(false)
+  }
+
   const signInForm = (
     <>
       <TextField
@@ -215,7 +220,7 @@ function SignInSignUpModal({ open, onClose }) {
           {showSignUpForm ? signUpForm : signInForm}
           {showAlert && <Alert severity={alertSeverity} sx={{ mt: 1 }} variant="outlined">{alertMessage}</Alert>}
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Sign {showSignUpForm ? 'Up' : 'In'}</Button>
-          <Link href="#" variant="body2" onClick={() => setShowSignUpForm(prev => !prev)}>
+          <Link href="#" variant="body2" onClick={toggleForm}>
             {showSignUpForm ? "Already have an account? Sign in" : "Don't have an account? Sign Up"}
           </Link>
         </Box>
