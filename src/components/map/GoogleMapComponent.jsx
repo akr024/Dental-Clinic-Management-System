@@ -45,7 +45,7 @@ function GoogleMapComponent({ children, clinicData, selectedClinic, onMarkerClic
       {children}
       <GoogleMapMarkers map={map} markers={clinicData} selectedClinic={selectedClinic} onMarkerClick={onMarkerClick} />
     </GoogleMap>
-  ) : <div style={{ height: '100%' }}></div>
+  ) : <div style={{ height: '100%', flex: '1 1 100%' }}></div>
 }
 
 export default GoogleMapComponent
