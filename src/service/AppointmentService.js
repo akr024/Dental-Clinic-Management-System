@@ -1,7 +1,7 @@
 import { Appointment } from '../models/AppointmentModel.js'
 import { Clinic } from '../models/ClinicModel.js'
 
-import { isFuture, subHours } from 'date-fns'
+import { addHours, isFuture, max, subHours } from 'date-fns'
 
 import mongoose from 'mongoose'
 
@@ -74,8 +74,27 @@ function isAppointmentAvailable(appointment) {
   return appointment.patientId == null && isFuture(subHours(appointment.dateTime, MIN_HOURS_BEFORE_BOOKING))
 }
 
+async function queryAppointments(input) {
+  const latestAvailabilityDate = addHours(new Date(), MIN_HOURS_BEFORE_BOOKING)
+  const minDate = max([latestAvailabilityDate, new Date(input.minDate)])
+
+  try {
+    const appointments = await Appointment.find({
+      clinicId: input.clinicId,
+      patientId: null,
+      dateTime: { $gte: minDate, $lte: input.maxDate }
+    }).sort({ dateTime: 1 })
+
+    return { success: true, appointments }
+  } catch (error) {
+    console.log(error.stack)
+    return { success: false, msg: 'internal server error' }
+  }
+}
+
 export default {
   createAppointment,
   bookAppointment,
+  queryAppointments,
   MIN_HOURS_BEFORE_BOOKING
 }

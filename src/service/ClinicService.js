@@ -1,8 +1,7 @@
-import { addHours } from 'date-fns'
+import { addHours, max } from 'date-fns'
 import { Appointment } from '../models/AppointmentModel.js'
 import { Clinic } from '../models/ClinicModel.js'
 import GoogleGeocodeService from './GoogleGeocodeService.js'
-import { max } from 'date-fns';
 
 import AppointmentService from './AppointmentService.js'
 
@@ -44,35 +43,16 @@ async function createClinic(inputClinic) {
 }
 
 async function queryClinics(query) {
-  if (!query.appointments) {
-    return Clinic.find()
-      .select('_id name address position')
-      .populate({
-        path: 'appointments',
-        options: { sort: { date: 1 } }
-      })
-      .then(result => ({ success: true, clinics: result }))
-  }
-
   const latestAvailabilityDate = addHours(new Date(), AppointmentService.MIN_HOURS_BEFORE_BOOKING)
 
-  const matchStage = { $match: {} }
+  const matchStage = { $match: { patientId: null } }
 
   if (query.appointments) {
-    if (query.appointments.onlyAvailable) {
-      matchStage.$match.patientId = null
-    }
-
-    if (query.appointments.from || query.appointments.to || query.appointments.onlyAvailable) {
+    if (query.appointments.from || query.appointments.to) {
       const dateTimeCondition = {};
 
-      if (query.appointments.onlyAvailable) {
-        dateTimeCondition.$gte = latestAvailabilityDate
-      }
-
       if (query.appointments.from) {
-        const fromDate = new Date(query.appointments.from)
-        dateTimeCondition.$gte = dateTimeCondition.$gte ? max([dateTimeCondition.$gte, fromDate]) : fromDate
+        dateTimeCondition.$gte = max([latestAvailabilityDate, new Date(query.appointments.from)])
       }
 
       if (query.appointments.to) {
@@ -103,7 +83,7 @@ async function queryClinics(query) {
     {
       $group: {
         _id: '$clinicId',
-        appointments: { $push: '$$ROOT' }
+        earliestAppointment: { $min: '$dateTime' }
       }
     },
     {
@@ -123,11 +103,7 @@ async function queryClinics(query) {
         name: '$clinic.name',
         address: '$clinic.address',
         position: '$clinic.position',
-        appointments: {
-          $sortArray: {
-            input: '$appointments', sortBy: { dateTime: 1 }
-          }
-        }
+        earliestAppointment: '$earliestAppointment'
       }
     }
   ])
