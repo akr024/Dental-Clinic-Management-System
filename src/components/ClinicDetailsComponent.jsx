@@ -9,6 +9,7 @@ import { Api, isAuthenticated } from '../Api';
 import ClinicInfoHeader from "./ClinicInfoHeader";
 import ConfirmAppointmentDialog from './ConfirmAppointmentDialog';
 import { AppointmentConfirmationModal, BookingStates } from './AppointmentConfirmationModal';
+import axios from 'axios';
 
 function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
   const [open, setOpen] = useState(true)
@@ -24,6 +25,7 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
   // hold reference for the out transition
   const lastSelectedClinic = useRef(null)
   const containerRef = useRef()
+  const abortControllerRef = useRef()
 
   const theme = useTheme();
   const mediaQueryMD = useMediaQuery(theme.breakpoints.up('md'));
@@ -40,18 +42,28 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
 
   useEffect(() => {
     if (selectedClinic) {
+      if(abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+      abortControllerRef.current = new AbortController()
+
       setIsLoadingAppointments(true)
 
-      Api.get(`clinics/${selectedClinic._id}/appointments`, { params: { minDate: startOfDay(date), maxDate: endOfDay(date) } })
+      Api.get(`clinics/${selectedClinic._id}/appointments`, { 
+        signal: abortControllerRef.current.signal,
+        params: { minDate: startOfDay(date), maxDate: endOfDay(date) } 
+      })
         .then(response => {
-          setIsLoadingAppointments(false)
           setAppointments(response.data.appointments)
+          setIsLoadingAppointments(false)
         })
         .catch(err => {
-          console.log(err)
-          setIsLoadingAppointments(false)
           // TODO: maybe display an error message
+          console.log(err)
           setAppointments([])
+          if(!axios.isCancel(err)) {
+            setIsLoadingAppointments(false)
+          }
         })
     }
   }, [date])
