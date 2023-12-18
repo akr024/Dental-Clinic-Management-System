@@ -5,11 +5,13 @@ import { errorHandlerDecorator } from './ErrorHandlerDecorator.js'
 
 const TOPIC_NOTIFICATION_CREATE_DENTIST = 'appointment/created'
 const TOPIC_NOTIFICATION_CREATE_PATIENT = 'appointment/cancelled'
+const TOPIC_NOTIFICATION_DELETE_ACCOUNT = 'account/deleted'
 
-function handleNotificationCreateDentist(topic, payload, packet) {
+
+function handleNotificationDeleteAccount(topic, payload, packet) {
   const data = JSON.parse(payload.toString())
 
-  NotificationService.createNotificationDentist(data)
+  NotificationService.createNotificationAccountDeletion(data)
 }
 
 function handleNotificationCreatePatient(topic, payload, packet) {
@@ -18,9 +20,17 @@ function handleNotificationCreatePatient(topic, payload, packet) {
     NotificationService.createNotificationPatient(data)
   }
 
+  function handleNotificationCreateDentist(topic, payload, packet) {
+    const data = JSON.parse(payload.toString())
+  
+    NotificationService.createNotificationPatient(data)
+  }
+
 function initialize() {
   subscribe(TOPIC_NOTIFICATION_CREATE_DENTIST, errorHandlerDecorator(handleNotificationCreateDentist))
   subscribe(TOPIC_NOTIFICATION_CREATE_PATIENT, errorHandlerDecorator(handleNotificationCreatePatient))
+  subscribe(TOPIC_NOTIFICATION_DELETE_ACCOUNT, errorHandlerDecorator(handleNotificationDeleteAccount))
+
 }
 
 export default {
