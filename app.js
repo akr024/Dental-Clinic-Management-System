@@ -6,6 +6,11 @@ const authRouter = require('./routes/routes');
 require('./utils/authConfig');
 const cors = require('cors');
 
+if (!process.env.JWT_SECRET) {
+  console.log('ERROR: Environment variable JWT_SECRET required')
+  process.exit()
+}
+
 const app = express();
 const port = process.env.PORT || 3000;
 
