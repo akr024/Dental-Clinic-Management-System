@@ -1,21 +1,31 @@
 import CloseIcon from '@mui/icons-material/Close';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Box, Button, IconButton, Paper, Slide, Tab, Tabs, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Paper, Slide, Tab, Tabs, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { DatePicker } from '@mui/x-date-pickers';
-import { add, sub } from 'date-fns';
+import { add, endOfDay, startOfDay, sub } from 'date-fns';
 import { useEffect, useRef, useState } from "react";
+import { Api, isAuthenticated } from '../Api';
 import ClinicInfoHeader from "./ClinicInfoHeader";
+import ConfirmAppointmentDialog from './ConfirmAppointmentDialog';
+import { AppointmentConfirmationModal, BookingStates } from './AppointmentConfirmationModal';
+import axios from 'axios';
 
-function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
+function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
   const [open, setOpen] = useState(true)
   const [tabValue, setTabValue] = useState(0)
   const [date, setDate] = useState(new Date())
-  const [appointmentsMap, setAppointmentsMap] = useState(new Map())
+  const [appointments, setAppointments] = useState([])
+  const [isLoadingAppointments, setIsLoadingAppointments] = useState(false)
+  const [selectedAppointment, setSelectedAppointment] = useState(null)
+  const [confirmAppointmentDialogOpen, setConfirmAppointmentDialogOpen] = useState(false)
+  const [appointmentConfirmationDialogOpen, setAppointmentConfirmationDialogOpen] = useState(false)
+  const [appointmentState, setAppointmentState] = useState(BookingStates.PENDING)
 
   // hold reference for the out transition
   const lastSelectedClinic = useRef(null)
   const containerRef = useRef()
+  const abortControllerRef = useRef()
 
   const theme = useTheme();
   const mediaQueryMD = useMediaQuery(theme.breakpoints.up('md'));
@@ -26,33 +36,68 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
 
     if (selectedClinic && selectedClinic?._id !== lastSelectedClinic?._id) {
       lastSelectedClinic.current = selectedClinic
-
-      const availableAppointments = selectedClinic.appointments
-        .filter(e => e.available)
-
-      const firstAvailableTime = availableAppointments.length === 0 ? new Date() : availableAppointments
-        .map(e => new Date(e.dateTime))
-        .reduce((a, b) => a < b ? a : b)
-
-      setDate(firstAvailableTime)
-
-      const map = new Map()
-      availableAppointments.forEach(appointment => {
-        const date = new Date(appointment.dateTime).toLocaleDateString()
-        if (!map.has(date)) {
-          map.set(date, [appointment])
-        } else {
-          map.get(date).push(appointment)
-        }
-      })
-
-      setAppointmentsMap(map)
+      setDate(new Date(selectedClinic.earliestAppointment))
     }
   }, [selectedClinic])
 
-  const close = () => setOpen(false)
+  useEffect(() => {
+    if (selectedClinic) {
+      if(abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+      abortControllerRef.current = new AbortController()
 
-  const isDateAvailable = date => appointmentsMap.has(date.toLocaleDateString())
+      setIsLoadingAppointments(true)
+
+      Api.get(`clinics/${selectedClinic._id}/appointments`, { 
+        signal: abortControllerRef.current.signal,
+        params: { minDate: startOfDay(date), maxDate: endOfDay(date) } 
+      })
+        .then(response => {
+          setAppointments(response.data.appointments)
+          setIsLoadingAppointments(false)
+        })
+        .catch(err => {
+          // TODO: maybe display an error message
+          console.log(err)
+          setAppointments([])
+          if(!axios.isCancel(err)) {
+            setIsLoadingAppointments(false)
+          }
+        })
+    }
+  }, [date])
+
+  const onBookAppointment = selectedAppointment => {
+    if (isAuthenticated()) {
+      setSelectedAppointment(selectedAppointment)
+      setConfirmAppointmentDialogOpen(true)
+    } else {
+      setSignInModalOpen(true)
+    }
+  }
+
+  const onConfirmAppointment = confirmed => {
+    setConfirmAppointmentDialogOpen(false)
+
+    if (confirmed) {
+      setAppointmentConfirmationDialogOpen(true)
+      setAppointmentState(BookingStates.PENDING)
+
+      Api.post(`/appointments/${selectedAppointment._id}/book`)
+        .then(() => {
+          setAppointmentState(BookingStates.CONFIRMED)
+
+          const appointmentIndex = appointments.findIndex(e => e._id === selectedAppointment._id)
+          if(appointmentIndex !== -1) {
+            setAppointments(prev => prev.filter(e => e._id !== selectedAppointment._id))
+          }
+        })
+        .catch(() => setAppointmentState(BookingStates.FAILED))
+    }
+  }
+
+  const close = () => setOpen(false)
 
   return (
     <Box
@@ -104,15 +149,19 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
                 <IconButton onClick={() => setDate(prev => sub(prev, { days: 1 }))}>
                   <NavigateBeforeIcon />
                 </IconButton>
-                <DatePicker sx={{ mb: 1 }} value={date} onChange={date => setDate(date)} minDate={new Date()} shouldDisableDate={date => !isDateAvailable(date)} />
+                <DatePicker sx={{ mb: 1 }} value={date} onChange={date => setDate(date)} minDate={new Date()} />
                 <IconButton onClick={() => setDate(prev => add(prev, { days: 1 }))}>
                   <NavigateNextIcon />
                 </IconButton>
               </Box>
 
               {
-                appointmentsMap.has(date.toLocaleDateString()) ?
-                  appointmentsMap.get(date.toLocaleDateString())
+                isLoadingAppointments && <CircularProgress disableShrink sx={{ m: 'auto' }} />
+              }
+
+              {
+                !isLoadingAppointments && (appointments.length > 0 ?
+                  appointments
                     .map(e => (
                       <Button
                         variant="outlined"
@@ -128,6 +177,7 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
                   <Typography sx={{ textAlign: 'center' }}>
                     No available appointments for {date.toLocaleString('en-GB', { day: 'numeric', month: 'short' })}
                   </Typography>
+                )
               }
 
             </Box>
@@ -141,6 +191,15 @@ function ClinicDetailsComponent({ selectedClinic, onBookAppointment }) {
           </Box>
         </Paper>
       </Slide>
+
+      <ConfirmAppointmentDialog open={confirmAppointmentDialogOpen} onClose={onConfirmAppointment} appointment={selectedAppointment} />
+      <AppointmentConfirmationModal
+        open={appointmentConfirmationDialogOpen}
+        onClose={() => setAppointmentConfirmationDialogOpen(false)}
+        clinic={selectedClinic}
+        appointment={selectedAppointment}
+        appointmentState={appointmentState}
+      />
     </Box>
   )
 }
