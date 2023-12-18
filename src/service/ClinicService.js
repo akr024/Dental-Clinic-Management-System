@@ -98,12 +98,21 @@ async function queryClinics(query) {
       $unwind: '$clinic'
     },
     {
+      $lookup: {
+        from: 'reviews',
+        localField: '_id',
+        foreignField: 'clinicId',
+        as: 'reviews'
+      }
+    },
+    {
       $project: {
         _id: '$clinic._id',
         name: '$clinic.name',
         address: '$clinic.address',
         position: '$clinic.position',
-        earliestAppointment: '$earliestAppointment'
+        earliestAppointment: '$earliestAppointment',
+        rating: { $avg: '$reviews.rating' }
       }
     }
   ])
