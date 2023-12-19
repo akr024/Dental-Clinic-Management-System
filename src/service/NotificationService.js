@@ -1,6 +1,29 @@
 import { Notification } from '../models/notificationModel.js'
 require("dotenv").config();
+import mongoose from 'mongoose';
 const nodemailer = require("nodemailer");
+
+async function getEmail(id) {
+    try{
+        mongoose.connect(mongoURIEmail, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+          })
+            .then(() => console.log('Connected to user service database'))
+            .catch(err => {
+              console.error(`Failed to connect to user service MongoDB with URI: ${mongoURIEmail}`);
+              console.error(err.stack);
+              process.exit(1);
+            });
+
+        const result = await mongoose.connection.collection('9groupminiproject').findOne({ _id: userId }, {"email": 1, "_id": 0});
+        await mongoose.disconnect();
+        return result;
+    } catch (err){
+        console.log(err.stack)
+        return { success: false, msg: 'internal database access error' }
+    }
+}
 
 async function createNotificationAccountDeletion(inputData){
     try{        
@@ -8,7 +31,7 @@ async function createNotificationAccountDeletion(inputData){
             title: `Account ${inputData.accountId} Deletion Confirmation`,
             time: new Date(),
             desc: `Account with ID: ${inputData.accountId} has been deleted from the platform. Sad to see you go :(`,
-            to: inputData.accountEmail
+            to: getEmail(inputData.accountId)
         }).save()
 
         sendEmail(newNotificationAccountDeletion);
@@ -29,7 +52,7 @@ async function createNotificationDentist(inputData) {
             title: `Appointment booked on ${dateTime}`,
             time: new Date(),
             desc: `Appointment for Dentist (${inputData.dentistId}) has been booked at clinic (${inputData.clinicId}) by Patient (${inputData.patientId})`,
-            to: inputData.dentistEmail
+            to: getEmail(inputData.accountId)
         }).save()
 
         sendEmail(newNotificationDoctor);
@@ -50,7 +73,7 @@ async function createNotificationPatient(inputData) {
             title: `Appointment (${inputData.appointmentId}) cancelled`,
             time: new Date(),
             desc: `Appointment with ID: ${inputData.appointmentId} has been cancelled at clinic (${inputData.clinicId}) by Dentist (${inputData.dentistId})`,
-            to: inputData.patientEmail
+            to: getEmail(inputData.accountId)
         }).save()
 
         sendEmail(newNotificationPatient);

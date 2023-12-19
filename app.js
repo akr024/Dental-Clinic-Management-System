@@ -7,6 +7,7 @@ import NotificationController from './src/controllers/NotificationController.js'
 dotenv.config();
 
 const mongoURI = process.env.MONGODB_URL
+const mongoURIEmail = process.env.MONGO_URL_EMAIL
 
 mongoose.connect(mongoURI)
   .then(() => console.log('connected to mongodb'))
