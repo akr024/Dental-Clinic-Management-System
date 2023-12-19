@@ -1,5 +1,5 @@
 import { Notification } from '../models/notificationModel.js'
-"use strict";
+require("dotenv").config();
 const nodemailer = require("nodemailer");
 
 async function createNotificationAccountDeletion(inputData){
@@ -63,24 +63,28 @@ async function createNotificationPatient(inputData) {
 }
 
 async function sendEmail(object) {
-  let transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.USER,
-        pass: process.env.PASS,
-      },
-    });
+    try{
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.USER,
+                pass: process.env.ACCESS_TOKEN //access token obtained using 2FA
+            }
+            });
+    
+        let info = await transporter.sendMail({
+            from: 'Notification Service <x>',
+            to: object.to,
+            subject: object.title,
+            text: object.desc
+        });
+    
+        console.log("Message sent: %s", info.messageId);
 
-    let info = await transporter.sendMail({
-      from: '"Dental Platform" <notifications@dentalplatform.com>', // sender address
-      to: object.to, // list of receivers
-      subject: object.title, // Subject line
-      text: object.desc // plain text body
-    });
-
-    console.log("Message sent: %s", info.messageId);
+    } catch(err){
+        console.log(err.stack)
+        return {success: false, msg: 'internal mail error'}
+    }
 }
 
 export default {
