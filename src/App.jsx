@@ -16,6 +16,7 @@ import SignInSignUpModal from './components/signin/SignInSignUpModal'
 
 import { Api, getSecondsBeforeJwtExpires, isAuthenticated, signOut } from './Api.js'
 
+
 function App() {
   const [signInModalOpen, setSignInModalOpen] = useState(false)
   const [confirmAppointmentDialogOpen, setConfirmAppointmentDialogOpen] = useState(false)
