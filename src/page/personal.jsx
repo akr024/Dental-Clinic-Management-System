@@ -2,7 +2,7 @@ import { Api, isAuthenticated, getAuthenticatedUserId } from '../Api.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Typography, Paper, TextField, Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-
+import './Personal.css';
 
 export default function Personal() {
 
@@ -24,6 +24,8 @@ export default function Personal() {
         setEmail(res.data.email);
         setPersonnummer(res.data.personnummer);
         setAppointments(res.data.appointments);
+      }).catch(err => {
+        console.log("Error retrieving user data:", err)
       })
   }
   }
@@ -33,8 +35,6 @@ export default function Personal() {
   }, []); // Empty dependency array to ensure useEffect runs only once on mount
 
   const handleSave = () => {
-    // Add logic to save the updated values to the server if needed
-    // For now, let's just toggle the edit mode
     if (editedName.trim() === '' || editedPersonnummer.trim() === '' || editedEmail.trim() === '') {
       console.error('Please fill in all fields.');
       return;
@@ -68,7 +68,7 @@ export default function Personal() {
 
 
   return (
-    <Box>
+    <Box className="personal-container">
       <Typography variant='h2' align='center'>Personal Page</Typography>
       <Box sx={{border: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '15vh'}}>
         <Typography variant='h4' align='center' sx={{ marginBottom: '15px'}}>User Info</Typography>
@@ -81,7 +81,7 @@ export default function Personal() {
       </Box>
       <Box sx={{ marginTop: '10px', marginBottom: '10px', textAlign: 'center' }}>
         {editInlineOpen ? (
-          <Button variant="contained" size='medium' onClick={handleSave}>
+          <Button className="save-button" variant="contained" size='medium' onClick={handleSave}>
             Save
           </Button>
         ) : (
