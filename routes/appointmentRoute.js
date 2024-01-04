@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.post('/', async (req,res) => {
     try {
-        console.log("entering if loop")
         if( 
             !req.body.dateTime||
             !req.body.clinicId||
@@ -13,17 +12,19 @@ router.post('/', async (req,res) => {
             ){
             res.status(400).json({msg:'Date and time is missing'})
         } else{
-            console.log("creating new appointment")
+            //Also need availability:True, when creating a new appointment from dentist side 
             const newAppointment = {
                 clinicId: req.body.clinicId,
-                dentistId: req.body.dentistId, //temporary placeholder
-                dateTime: req.body.dateTime
+                dentistId: req.body.dentistId,
+                dateTime: req.body.dateTime,
+                availability: true
             }
             publishAwaitingResponse(appointment_publish_create,JSON.stringify(newAppointment),(topic,payload,packet)=>{
     
                 const response = JSON.parse(payload.toString())
                 if(response.success){
-                    res.status(201).json(response.newAppointment)
+                    //response.appointment instead of response.newAppointmet
+                    res.status(201).json(response.appointment)
                 } else{
                     res.status(400).json(response.msg)
                 }      
