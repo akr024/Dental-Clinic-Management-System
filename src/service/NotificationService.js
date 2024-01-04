@@ -3,13 +3,14 @@ import dotenv from "dotenv";
 dotenv.config();
 import mongoose from 'mongoose';
 import nodemailer from "nodemailer";
+import { userDBConnection } from "../../app.js";
 
 async function getEmail(id, userType) {
     try{
         if(userType==="dentist"){
-            const result = await mongoose.connection.collection('dentists').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+            const result = await userDBConnection.collection('dentists').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
         } else {
-            const result = await mongoose.connection.collection('patients').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+            const result = await userDBConnection.collection('patients').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
         }
         return result.email;
     } catch (err){
@@ -46,7 +47,7 @@ async function createNotificationDentist(inputData) {
             time: new Date(),
             desc: `Appointment for Dentist (${inputData.dentistId}) has been booked at clinic (${inputData.clinicId}) by Patient (${inputData.patient})`,
             to: `${getEmail(inputData.dentistId, "dentist")}`
-        }).save({ collection: 'notifications' })
+        }).save()
 
         sendEmail(newNotificationDoctor);
 

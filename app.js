@@ -4,19 +4,34 @@ dotenv.config();
 import { initializeMqttUsingEnvVariables } from 'mqtt-service';
 import NotificationController from './src/controllers/NotificationController.js';
 
-const mongoURI = process.env.MONGO_URL
+const mongoURINotification = process.env.MONGO_URL_NOTIFICATION
+const mongoURIEmail = process.env.MONGO_URL_EMAIL
 
 try{
-  mongoose.connect(mongoURI)
-      .then(() => console.log('Connected to the central database'))
+  mongoose.connect(mongoURINotification)
+      .then(() => console.log('Connected to the notification database'))
       .catch(err => {
-        console.error(`Failed to connect to central MongoDB with URI: ${mongoURI}`);
+        console.error(`Failed to connect to central MongoDB with URI: ${mongoURINotification}`);
         console.error(err.stack);
         process.exit(1);
       });
 } catch (err){
   console.log(err.stack)
-} 
+}
+
+let userDBConnection;
+
+try{
+  userDBConnection = mongoose.createConnection(mongoURIEmail)
+    .on('connected', () => console.log('Connected to the user database'))
+    .on('error', err => {
+      console.error(`Failed to connect to central MongoDB with URI: ${mongoURIEmail}`);
+      console.error(err.stack);
+      process.exit(1);
+    });
+} catch (err){
+  console.log(err.stack)
+}
 
 const mqttClient = initializeMqttUsingEnvVariables()
 
@@ -25,3 +40,5 @@ mqttClient.on('connect', () => {
 
   NotificationController.initialize()
 })
+
+export { userDBConnection };
