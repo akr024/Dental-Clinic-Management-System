@@ -10,6 +10,7 @@ import ClinicInfoHeader from "./ClinicInfoHeader";
 import ConfirmAppointmentDialog from './ConfirmAppointmentDialog';
 import { AppointmentConfirmationModal, BookingStates } from './AppointmentConfirmationModal';
 import axios from 'axios';
+import ReviewModal from './ReviewModal';
 
 function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
   const [open, setOpen] = useState(true)
@@ -21,6 +22,7 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
   const [confirmAppointmentDialogOpen, setConfirmAppointmentDialogOpen] = useState(false)
   const [appointmentConfirmationDialogOpen, setAppointmentConfirmationDialogOpen] = useState(false)
   const [appointmentState, setAppointmentState] = useState(BookingStates.PENDING)
+  const [reviewDialogOpen,setReviewDialogOpen] = useState(false) 
 
   // hold reference for the out transition
   const lastSelectedClinic = useRef(null)
@@ -188,6 +190,7 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
             <Typography sx={{ textAlign: 'center' }}>
               No reviews yet...
             </Typography>
+            <Button variant="contained" fullWidth sx={{ mt: 1 }} onClick={()=>setReviewDialogOpen(true)}>Leave A Review</Button>
           </Box>
         </Paper>
       </Slide>
@@ -200,6 +203,11 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
         appointment={selectedAppointment}
         appointmentState={appointmentState}
       />
+      <ReviewModal
+        open={reviewDialogOpen}
+        onClose={()=>setReviewDialogOpen(false)}>
+
+      </ReviewModal>
     </Box>
   )
 }
