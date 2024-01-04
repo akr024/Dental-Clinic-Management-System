@@ -1,38 +1,31 @@
-import { Notification } from '../models/notificationModel.js'
-require("dotenv").config();
+import { Notification } from '../models/notificationModel.js';
+import dotenv from "dotenv";
+dotenv.config();
 import mongoose from 'mongoose';
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
-async function getEmail(id) {
+async function getEmail(id, userType) {
     try{
-        mongoose.connect(mongoURIEmail, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-          })
-            .then(() => console.log('Connected to user service database'))
-            .catch(err => {
-              console.error(`Failed to connect to user service MongoDB with URI: ${mongoURIEmail}`);
-              console.error(err.stack);
-              process.exit(1);
-            });
-
-        const result = await mongoose.connection.collection('9groupminiproject').findOne({ _id: userId }, {"email": 1, "_id": 0});
-        await mongoose.disconnect();
-        return result;
+        if(userType==="dentist"){
+            const result = await mongoose.connection.collection('dentists').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+        } else {
+            const result = await mongoose.connection.collection('patients').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+        }
+        return result.email;
     } catch (err){
         console.log(err.stack)
-        return { success: false, msg: 'internal database access error' }
+        return { success: false, msg: 'internal email retrieval error' }
     }
 }
 
-async function createNotificationAccountDeletion(inputData){
+/*async function createNotificationAccountDeletion(inputData){
     try{        
         const newNotificationAccountDeletion = await new Notification({
             title: `Account ${inputData.accountId} Deletion Confirmation`,
             time: new Date(),
             desc: `Account with ID: ${inputData.accountId} has been deleted from the platform. Sad to see you go :(`,
             to: getEmail(inputData.accountId)
-        }).save()
+        }).save({ collection: 'notifications' })
 
         sendEmail(newNotificationAccountDeletion);
 
@@ -42,7 +35,7 @@ async function createNotificationAccountDeletion(inputData){
         console.log(err.stack)
         return { success: false, msg: 'internal server error' }
     }
-}
+} */
 
 async function createNotificationDentist(inputData) {
     try{
@@ -51,9 +44,9 @@ async function createNotificationDentist(inputData) {
         const newNotificationDoctor = await new Notification({
             title: `Appointment booked on ${dateTime}`,
             time: new Date(),
-            desc: `Appointment for Dentist (${inputData.dentistId}) has been booked at clinic (${inputData.clinicId}) by Patient (${inputData.patientId})`,
-            to: getEmail(inputData.accountId)
-        }).save()
+            desc: `Appointment for Dentist (${inputData.dentistId}) has been booked at clinic (${inputData.clinicId}) by Patient (${inputData.patient})`,
+            to: `${getEmail(inputData.dentistId, "dentist")}`
+        }).save({ collection: 'notifications' })
 
         sendEmail(newNotificationDoctor);
 
@@ -73,8 +66,8 @@ async function createNotificationPatient(inputData) {
             title: `Appointment (${inputData.appointmentId}) cancelled`,
             time: new Date(),
             desc: `Appointment with ID: ${inputData.appointmentId} has been cancelled at clinic (${inputData.clinicId}) by Dentist (${inputData.dentistId})`,
-            to: getEmail(inputData.accountId)
-        }).save()
+            to: `${getEmail(inputData.patient, "patient")}`
+        }).save({ collection: 'notifications' })
 
         sendEmail(newNotificationPatient);
 
@@ -113,5 +106,4 @@ async function sendEmail(object) {
 export default {
   createNotificationDentist,
   createNotificationPatient,
-  createNotificationAccountDeletion
 }
