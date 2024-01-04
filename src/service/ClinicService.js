@@ -43,6 +43,16 @@ async function createClinic(inputClinic) {
 }
 
 async function queryClinics(query) {
+  if (!query || !query.appointments) { 
+    return Clinic.find()
+      .select('_id name address position')
+      .populate({
+        path: 'appointments',
+        options: { sort: { date: 1 } }
+      })
+      .then(result => ({ success: true, clinics: result }))
+  }
+
   const latestAvailabilityDate = addHours(new Date(), AppointmentService.MIN_HOURS_BEFORE_BOOKING)
 
   const matchStage = { $match: { patientId: null } }
