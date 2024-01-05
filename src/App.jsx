@@ -21,7 +21,7 @@ function App() {
   const [signInModalOpen, setSignInModalOpen] = useState(false)
   const [confirmAppointmentDialogOpen, setConfirmAppointmentDialogOpen] = useState(false)
   const [clinicData, setClinicData] = useState([])
-  const [colorMode, setColorMode] = useState('light')
+  const [colorMode, setColorMode] = useState('dark')
   const [selectedClinic, setSelectedClinic] = useState(null)
   const [selectedAppointment, setSelectedAppointment] = useState(null)
   const [authenticated, setAuthenticated] = useState(isAuthenticated())
