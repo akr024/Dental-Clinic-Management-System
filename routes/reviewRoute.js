@@ -26,13 +26,9 @@ router.post('/',passport.authenticate('jwt', { session: false }), async (req, re
         }
 
         publishAwaitingResponse(TOPIC_REVIEW_CREATE, JSON.stringify(newReview), (topic, payload, packet) => {
-
-            const response = JSON.parse(payload.toString())
-            if (response.success) {
-                res.status(201).json(response.newReview)
-            } else {
-                res.status(400).json(response.msg)
-            }
+            const response = JSON.parse(payload.toString());
+            res.status(response.success ? 201 : 400).json(response);
+            console.log(response);
         })
 
     } catch (error) {
