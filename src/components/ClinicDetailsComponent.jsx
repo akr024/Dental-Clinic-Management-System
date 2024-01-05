@@ -1,7 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Box, Button, CircularProgress, IconButton, Paper, Slide, Tab, Tabs, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Paper, Slide, Tab, Tabs, Typography, useMediaQuery, useTheme,List } from "@mui/material";
 import { DatePicker } from '@mui/x-date-pickers';
 import { add, endOfDay, startOfDay, sub } from 'date-fns';
 import { useEffect, useRef, useState } from "react";
@@ -11,6 +11,8 @@ import ConfirmAppointmentDialog from './ConfirmAppointmentDialog';
 import { AppointmentConfirmationModal, BookingStates } from './AppointmentConfirmationModal';
 import axios from 'axios';
 import ReviewModal from './ReviewModal';
+import ReviewComponent from './ReviewComponent'
+
 
 function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
   const [open, setOpen] = useState(true)
@@ -23,7 +25,7 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
   const [appointmentConfirmationDialogOpen, setAppointmentConfirmationDialogOpen] = useState(false)
   const [appointmentState, setAppointmentState] = useState(BookingStates.PENDING)
   const [reviewDialogOpen,setReviewDialogOpen] = useState(false) 
-
+  const [reviews,setReviews] = useState([])
   // hold reference for the out transition
   const lastSelectedClinic = useRef(null)
   const containerRef = useRef()
@@ -37,11 +39,21 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
     setTabValue(0)
 
     if (selectedClinic && selectedClinic?._id !== lastSelectedClinic?._id) {
-      lastSelectedClinic.current = selectedClinic
-      setDate(new Date(selectedClinic.earliestAppointment))
-    }
-  }, [selectedClinic])
+      lastSelectedClinic.current = selectedClinic;
+      setDate(new Date(selectedClinic.earliestAppointment));
 
+      Api.get(`clinics/${selectedClinic?._id}/reviews`)
+      .then(response => {
+        setReviews(response.data)
+      })
+      .catch(err => {
+        console.log(err)
+      }
+      )
+  }
+    },
+    [selectedClinic]);
+  
   useEffect(() => {
     if (selectedClinic) {
       if(abortControllerRef.current) {
@@ -187,9 +199,10 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
           </Box>
 
           <Box sx={{ display: tabValue === 1 ? 'block' : 'none', mt: 2 }}>
-            <Typography sx={{ textAlign: 'center' }}>
-              No reviews yet...
-            </Typography>
+          {reviews && reviews?.reviews?.length > 0 ? <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            {reviews.reviews.map((review, index) => {
+                return <ReviewComponent key={index} reviewComponent review={review} />})}
+            </List> :  <Typography>No review yet</Typography>}
             <Button variant="contained" fullWidth sx={{ mt: 1 }} onClick={()=>setReviewDialogOpen(true)}>Leave A Review</Button>
           </Box>
         </Paper>
