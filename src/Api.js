@@ -24,7 +24,6 @@ const AuthApi = axios.create({
 AuthApi.interceptors.response.use(response => {
   if (response.config.url.endsWith('/login')) {
     jwt = response.data.token
-    console.log(jwtDecode(jwt))
   }
 
   return response
