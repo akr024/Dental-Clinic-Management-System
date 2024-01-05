@@ -48,6 +48,7 @@ function NavBar({ toggleColorMode, onSigninClick, onSignoutClick, authenticated 
   const handleLogOut = () => {
     handleCloseAccountMenu()
     onSignoutClick()
+    navigate('/')
   }
 
   return (
