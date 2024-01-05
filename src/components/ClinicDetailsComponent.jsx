@@ -205,8 +205,7 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
       />
       <ReviewModal
         open={reviewDialogOpen}
-        onClose={()=>setReviewDialogOpen(false)}>
-
+        onClose={()=>setReviewDialogOpen(false)} selectedClinicId={selectedClinic?._id}>
       </ReviewModal>
     </Box>
   )
