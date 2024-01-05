@@ -15,7 +15,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7'
 
 import { useTheme } from '@mui/material/styles'
 
-const pages = ['Home', 'Link2', 'About']
+const pages = ['Home', 'Personal', 'About']
 
 function NavBar({ toggleColorMode, onSigninClick, onSignoutClick, authenticated }) {
   const theme = useTheme()

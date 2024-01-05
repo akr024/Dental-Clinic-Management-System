@@ -24,10 +24,15 @@ const AuthApi = axios.create({
 AuthApi.interceptors.response.use(response => {
   if (response.config.url.endsWith('/login')) {
     jwt = response.data.token
+    console.log(jwtDecode(jwt))
   }
 
   return response
 })
+
+const getAuthenticatedUserId = () => {
+  return jwtDecode(jwt).user._id
+}
 
 const getJwtExpDate = () => {
   const decoded = jwtDecode(jwt)
@@ -45,5 +50,6 @@ export {
   AuthApi,
   getSecondsBeforeJwtExpires,
   isAuthenticated,
-  signOut
+  signOut,
+  getAuthenticatedUserId
 }

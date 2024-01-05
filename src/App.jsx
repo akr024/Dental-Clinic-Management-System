@@ -14,10 +14,11 @@ import SignInSignUpModal from './components/signin/SignInSignUpModal'
 
 import { Api, getSecondsBeforeJwtExpires, isAuthenticated, signOut } from './Api.js'
 
+
 function App() {
   const [signInModalOpen, setSignInModalOpen] = useState(false)
   const [clinicData, setClinicData] = useState([])
-  const [colorMode, setColorMode] = useState('light')
+  const [colorMode, setColorMode] = useState('dark')
   const [selectedClinic, setSelectedClinic] = useState(null)
   const [authenticated, setAuthenticated] = useState(isAuthenticated())
 
