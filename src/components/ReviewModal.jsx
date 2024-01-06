@@ -37,7 +37,6 @@ function ReviewModal({ open, onClose, selectedClinicId }) {
         );
       
         const data = await response.data;
-        console.log(data);
         if (data.success) {
           setSuccessAlert(true);
           onClose();

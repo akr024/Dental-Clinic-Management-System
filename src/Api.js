@@ -29,6 +29,10 @@ AuthApi.interceptors.response.use(response => {
   return response
 })
 
+const getAuthenticatedUserId = () => {
+  return jwtDecode(jwt).user._id
+}
+
 const getJwtExpDate = () => {
   const decoded = jwtDecode(jwt)
   return new Date(decoded.exp * 1000)
@@ -45,5 +49,6 @@ export {
   AuthApi,
   getSecondsBeforeJwtExpires,
   isAuthenticated,
-  signOut
+  signOut,
+  getAuthenticatedUserId
 }
