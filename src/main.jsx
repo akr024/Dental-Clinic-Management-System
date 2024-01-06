@@ -2,23 +2,24 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
-import Personal from './page/personal.jsx'
+import PersonalPage from './page/PersonalPage.jsx'
 
-import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import MainPage from './page/MainPage.jsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />
-  },
-  {
-    path: "/hi",
-    element: <Personal />
+    element: <App />,
+    children: [
+      { path: "/", element: <MainPage /> },
+      { path: "/personal-page", element: <PersonalPage /> }
+    ]
   }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router= {router} />
+    <RouterProvider router={router} />
   </React.StrictMode>
 )

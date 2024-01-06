@@ -2,9 +2,11 @@ import { Api, isAuthenticated, getAuthenticatedUserId } from '../Api.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Typography, Paper, TextField, Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import './Personal.css';
+import { isFuture } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
-export default function Personal() {
+export default function PersonalPage() {
+  const navigate = useNavigate()
 
   const [name, setName] = useState('')
   const [personnummer, setPersonnummer] = useState('')
@@ -18,20 +20,22 @@ export default function Personal() {
   const [editedEmail, setEditedEmail] = useState('');
 
   const getInfo = () => {
-    if (isAuthenticated()) {
-      Api.get(`/patients/${getAuthenticatedUserId()}`).then((res) => {
-        setName(res.data.name);
-        setEmail(res.data.email);
-        setPersonnummer(res.data.personnummer);
-        setAppointments(res.data.appointments);
-      }).catch(err => {
-        console.log("Error retrieving user data:", err)
-      })
-  }
+    Api.get(`/patients/${getAuthenticatedUserId()}`).then((res) => {
+      setName(res.data.name);
+      setEmail(res.data.email);
+      setPersonnummer(res.data.personnummer);
+      setAppointments(res.data.appointments);
+    }).catch(err => {
+      console.log("Error retrieving user data:", err)
+    })
   }
 
   useEffect(() => {
-    getInfo();
+    if (isAuthenticated()) {
+      getInfo();
+    } else {
+      navigate('/')
+    }
   }, []); // Empty dependency array to ensure useEffect runs only once on mount
 
   const handleSave = () => {
@@ -60,12 +64,7 @@ export default function Personal() {
   };
 
   // Function to check if an appointment's date is in the future
-  const isFutureAppointment = (appointment) => {
-    const appointmentDate = new Date(appointment.date);
-    const currentDate = new Date();
-    return appointmentDate > currentDate;
-  };
-
+  const isFutureAppointment = appointment => isFuture(new Date(appointment.date))
 
   return (
     <Box className="personal-container">
@@ -95,7 +94,7 @@ export default function Personal() {
         <Typography variant='h4' align='center' sx={{ marginBottom: '15px' }}>
           Future Appointments
         </Typography>
-        {appointments
+        {appointments && appointments
           .filter((appointment) => isFutureAppointment(appointment))
           .map((futureAppointment, index) => (
             <Typography key={index} variant='h5' align='left' sx={{ marginBottom: '8px' }}>
@@ -108,7 +107,7 @@ export default function Personal() {
         <Typography variant='h4' align='center' sx={{ marginBottom: '15px' }}>
           Past Appointments
         </Typography>
-        {appointments
+        {appointments && appointments
           .filter((appointment) => !isFutureAppointment(appointment))
           .map((pastAppointment, index) => (
             <Typography key={index} variant='h5' align='left' sx={{ marginBottom: '8px' }}>

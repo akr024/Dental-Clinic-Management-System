@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -17,11 +18,13 @@ function ReviewModal({ open, onClose }) {
       <DialogTitle>Review</DialogTitle>
 
       <DialogContent>
-        <Rating
-          value={ratingValue}
-          onChange={(event, newValue) => setRatingValue(newValue)}
-          sx={{ mb: 1, display: "flex" }}
-        />
+        <Box sx={{display: 'flex'}}>
+          <Rating
+            value={ratingValue}
+            onChange={(event, newValue) => setRatingValue(newValue)}
+            sx={{ mb: 1 }}
+          />
+        </Box>
         <TextField label="Review" multiline minRows={4} maxRows={4}></TextField>
       </DialogContent>
       <DialogActions>

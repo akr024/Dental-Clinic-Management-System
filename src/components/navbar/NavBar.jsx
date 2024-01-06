@@ -14,11 +14,17 @@ import Brightness4Icon from '@mui/icons-material/Brightness4'
 import Brightness7Icon from '@mui/icons-material/Brightness7'
 
 import { useTheme } from '@mui/material/styles'
+import { useNavigate } from 'react-router-dom'
 
-const pages = ['Home', 'Personal', 'About']
+const pages = [
+  { name: 'Home', path: '/' },
+  { name: 'Personal Page', path: '/personal-page' },
+  { name: 'About', path: '#' }
+]
 
 function NavBar({ toggleColorMode, onSigninClick, onSignoutClick, authenticated }) {
   const theme = useTheme()
+  const navigate = useNavigate();
 
   const [anchorElementAccount, setAnchorElementAccount] = useState(null)
   const [anchorElementNav, setAnchorElementNav] = useState(null)
@@ -27,11 +33,22 @@ function NavBar({ toggleColorMode, onSigninClick, onSignoutClick, authenticated 
   const handleCloseAccountMenu = () => setAnchorElementAccount(null)
 
   const handleNavMenu = event => setAnchorElementNav(event.currentTarget)
-  const handleCloseNavMenu = () => setAnchorElementNav(null)
+  const handleCloseNavMenu = page => {
+    setAnchorElementNav(null)
+    if (page) {
+      navigate(page.path)
+    }
+  }
+
+  const onAccountMenuPersonalPageClick = () => {
+    handleCloseAccountMenu()
+    navigate('/personal-page')
+  }
 
   const handleLogOut = () => {
     handleCloseAccountMenu()
     onSignoutClick()
+    navigate('/')
   }
 
   return (
@@ -49,24 +66,29 @@ function NavBar({ toggleColorMode, onSigninClick, onSignoutClick, authenticated 
             keepMounted
             transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             open={Boolean(anchorElementNav)}
-            onClose={handleCloseNavMenu}
+            onClose={() => handleCloseNavMenu(null)}
             sx={{ display: { xs: 'block', md: 'none' } }}
           >
             {pages.map(page => (
-              <MenuItem key={page} onClick={handleCloseNavMenu}>
-                <Typography textAlign="center">{page}</Typography>
+              <MenuItem key={page.name} onClick={() => handleCloseNavMenu(page)}>
+                <Typography textAlign="center">{page.name}</Typography>
               </MenuItem>
             ))}
           </Menu>
 
-          <Typography variant="h6" component="a" href="#" sx={{ mr: 2, textDecoration: 'none', color: 'inherit', display: { xs: 'flex', md: 'flex' }, flexGrow: { xs: 1, md: 0 } }}>
+          <Typography variant="h6"
+            component="a"
+            href="#"
+            sx={{ mr: 2, textDecoration: 'none', color: 'inherit', display: { xs: 'flex', md: 'flex' }, flexGrow: { xs: 1, md: 0 } }}
+            onClick={() => navigate('/')}
+          >
             LOGO
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
-              <Button key={page} sx={{ my: 2, color: 'white', display: 'block' }} >
-                {page}
+              <Button key={page.name} onClick={() => navigate(page.path)} sx={{ my: 2, color: 'white', display: 'block' }} >
+                {page.name}
               </Button>
             ))}
           </Box>
@@ -91,7 +113,7 @@ function NavBar({ toggleColorMode, onSigninClick, onSignoutClick, authenticated 
                 open={Boolean(anchorElementAccount)}
                 onClose={handleCloseAccountMenu}
               >
-                <MenuItem onClick={handleCloseAccountMenu}>My account</MenuItem>
+                <MenuItem onClick={onAccountMenuPersonalPageClick}>Personal page</MenuItem>
                 <MenuItem onClick={handleLogOut}>Log out</MenuItem>
               </Menu>
             </div>
