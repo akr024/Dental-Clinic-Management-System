@@ -17,11 +17,14 @@ function handleClinicCreate(topic, payload, packet) {
 }
 
 function handleClinicQuery(topic, payload, packet) {
-  const query = JSON.parse(payload)
-
+  let query = {}
+  if(payload?.length){
+    query = JSON.parse(payload)}
   ClinicService.queryClinics(query)
     .then(response => publishResponse(packet, JSON.stringify(response), { qos: RESPONSE_QOS }))
 }
+
+
 
 function initialize() {
   subscribeShared(SUBSCRIPTION_SHARE_NAME, TOPIC_CLINIC_CREATE, errorHandlerDecorator(handleClinicCreate, RESPONSE_QOS))
