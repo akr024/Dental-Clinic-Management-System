@@ -46,7 +46,7 @@ router.get('/:id/appointments', (req, res) => {
     publishAwaitingResponse(TOPIC_APPOINTMENT_QUERY, JSON.stringify(query), (topic, payload) => {
       let response = JSON.parse(payload.toString())
       if (response.success) {
-        setTimeout(() => res.json({ appointments: response.appointments }), 1)
+        res.json({ appointments: response.appointments })
       } else {
         res.status(400).json({ msg: response.msg })
       }

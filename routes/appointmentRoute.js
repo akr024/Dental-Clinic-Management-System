@@ -3,6 +3,7 @@ import { publishAwaitingResponse } from 'mqtt-service'
 import passport from '../utils/authConfig.js';
 
 const TOPIC_APPOINTMENT_BOOK = 'appointment/book'
+const TOPIC_APPOINTMENT_CANCEL = 'appointment/cancel'
 
 const router = express.Router()
 
@@ -14,6 +15,27 @@ router.post('/:id/book', passport.authenticate('jwt', { session: false }), (req,
     }
 
     publishAwaitingResponse(TOPIC_APPOINTMENT_BOOK, JSON.stringify(query), (topic, payload, packet) => {
+      let response = JSON.parse(payload.toString())
+      if (response.success) {
+        res.status(204).end()
+      } else {
+        res.status(400).json({ msg: response.msg })
+      }
+    })
+  } catch (error) {
+    console.log(error.stack)
+    return res.status(500).json({ msg: 'internal server error' })
+  }
+})
+
+router.post('/:id/cancel', passport.authenticate('jwt', { session: false }), (req, res) => {
+  try {
+    const query = {
+      appointmentId: req.params.id,
+      patientId: req.user._id
+    }
+
+    publishAwaitingResponse(TOPIC_APPOINTMENT_CANCEL, JSON.stringify(query), (topic, payload, packet) => {
       let response = JSON.parse(payload.toString())
       if (response.success) {
         res.status(204).end()
