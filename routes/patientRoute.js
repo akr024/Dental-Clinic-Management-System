@@ -41,20 +41,19 @@ try {
 }
 })
 
-router.get('/:Personnummer',async(req,res)=>{
-
-    const patientNumber = req.params.Personnummer
-    publishAwaitingResponse(patient_publish_query,JSON.stringify({Personnummer:patientNumber}),(topic,payload,packet)=>{
+router.get('/:id', async (req, res) => {
+    publishAwaitingResponse(patient_publish_query, JSON.stringify({ patientId: req.params.id }), (topic, payload, packet) => {
 
         const response = JSON.parse(payload.toString())
-            if(response.success){
-                res.status(201).json(response)
-            } else{
-                res.status(400).json(response.msg)
-            }   
-
+        console.log(response)
+        if (response.success) {
+            res.status(200).json(response.patient)
+        } else {
+            res.status(400).json({msg: response.msg})
+        }
     })
 })
+
 router.delete('/:Personnummer',async(req,res)=>{
     const patientNumber = req.params.Personnummer
     try {
