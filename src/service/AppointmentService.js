@@ -1,3 +1,4 @@
+import { publish } from 'mqtt-service'
 import { Appointment } from '../models/AppointmentModel.js'
 import { Clinic } from '../models/ClinicModel.js'
 
@@ -7,6 +8,7 @@ import mongoose from 'mongoose'
 
 const MIN_HOURS_BEFORE_APPOINTMENT_CREATION = 2
 const MIN_HOURS_BEFORE_BOOKING = 1
+const MIN_HOURS_BEFORE_CANCELLING = 1
 
 async function createAppointment(inputAppointment) {
   try {
@@ -38,6 +40,38 @@ async function createAppointment(inputAppointment) {
     await clinic.save()
 
     return { success: true, appointment: savedAppointment }
+  } catch (err) {
+    console.log(err.stack)
+    return { success: false, msg: 'internal server error' }
+  }
+}
+
+async function cancelAppointment(input) {
+  try {
+    if (!input?.appointmentId || !input?.patientId) {
+      return { success: false, msg: 'appointmentId and patientId required' }
+    }
+
+    const appointment = await Appointment.findById(input.appointmentId)
+
+    if (!isFuture(subHours(appointment.dateTime, MIN_HOURS_BEFORE_CANCELLING))) {
+      return { success: false, msg: `appointment must be cancelled at least ${MIN_HOURS_BEFORE_CANCELLING} hour in advance` }
+    }
+
+    if (!appointment) {
+      return { success: false, msg: `Appointment with id ${input.appointmentId} doesn't exist` }
+    }
+
+    if (appointment.patientId != input.patientId) {
+      return { success: false, msg: `Appointment with id ${input.appointmentId} is not booked by patient with id ${input.patientId}` }
+    }
+
+    appointment.patientId = null
+    appointment.save()
+
+    publish('appointment/cancelled', JSON.stringify({ appointmentId: input.appointmentId, patientId: input.patientId }))
+
+    return { success: true }
   } catch (err) {
     console.log(err.stack)
     return { success: false, msg: 'internal server error' }
@@ -94,6 +128,7 @@ async function queryAppointments(input) {
 
 export default {
   createAppointment,
+  cancelAppointment,
   bookAppointment,
   queryAppointments,
   MIN_HOURS_BEFORE_BOOKING
