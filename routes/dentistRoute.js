@@ -15,9 +15,9 @@ router.post('/',async(req,res)=>{
         res.status(400).json({msg:'Credentials missing'})
     } else{
         const newDentist = {
-            Personnummer: req.body.Personnummer,
-            Firstname: req.body.Firstname,
-            Lastname: req.body.Lastname,
+            Personnummer: req.body.personnummer,
+            Firstname: req.body.firstName,
+            Lastname: req.body.lastName,
             password: req.body.password,
             email: req.body.email
         }
