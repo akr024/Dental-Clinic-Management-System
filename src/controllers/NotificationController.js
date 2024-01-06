@@ -1,6 +1,5 @@
 import { subscribe } from 'mqtt-service'
-import NotificationService from '../service/ClinicService.js'
-import { errorHandlerDecorator } from './ErrorHandlerDecorator.js'
+import NotificationService from '../service/NotificationService.js'
 import { errorHandlerDecorator } from './ErrorHandlerDecorator.js'
 
 const TOPIC_NOTIFICATION_CREATE_DENTIST = 'appointment/created'

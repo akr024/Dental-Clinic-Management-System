@@ -1,15 +1,32 @@
-import { Notification } from '../models/notificationModel.js'
-require("dotenv").config();
-const nodemailer = require("nodemailer");
+import { Notification } from '../models/notificationModel.js';
+import dotenv from "dotenv";
+dotenv.config();
+import mongoose from 'mongoose';
+import nodemailer from "nodemailer";
+import { userDBConnection } from "../../app.js";
 
-async function createNotificationAccountDeletion(inputData){
+async function getEmail(id, userType) {
+    try{
+        if(userType==="dentist"){
+            const result = await userDBConnection.collection('dentists').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+        } else {
+            const result = await userDBConnection.collection('patients').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+        }
+        return result.email;
+    } catch (err){
+        console.log(err.stack)
+        return { success: false, msg: 'internal email retrieval error' }
+    }
+}
+
+/*async function createNotificationAccountDeletion(inputData){
     try{        
         const newNotificationAccountDeletion = await new Notification({
             title: `Account ${inputData.accountId} Deletion Confirmation`,
             time: new Date(),
             desc: `Account with ID: ${inputData.accountId} has been deleted from the platform. Sad to see you go :(`,
-            to: inputData.accountEmail
-        }).save()
+            to: getEmail(inputData.accountId)
+        }).save({ collection: 'notifications' })
 
         sendEmail(newNotificationAccountDeletion);
 
@@ -19,7 +36,7 @@ async function createNotificationAccountDeletion(inputData){
         console.log(err.stack)
         return { success: false, msg: 'internal server error' }
     }
-}
+} */
 
 async function createNotificationDentist(inputData) {
     try{
@@ -28,8 +45,8 @@ async function createNotificationDentist(inputData) {
         const newNotificationDoctor = await new Notification({
             title: `Appointment booked on ${dateTime}`,
             time: new Date(),
-            desc: `Appointment for Dentist (${inputData.dentistId}) has been booked at clinic (${inputData.clinicId}) by Patient (${inputData.patientId})`,
-            to: inputData.dentistEmail
+            desc: `Appointment for Dentist (${inputData.dentistId}) has been booked at clinic (${inputData.clinicId}) by Patient (${inputData.patient})`,
+            to: `${getEmail(inputData.dentistId, "dentist")}`
         }).save()
 
         sendEmail(newNotificationDoctor);
@@ -50,8 +67,8 @@ async function createNotificationPatient(inputData) {
             title: `Appointment (${inputData.appointmentId}) cancelled`,
             time: new Date(),
             desc: `Appointment with ID: ${inputData.appointmentId} has been cancelled at clinic (${inputData.clinicId}) by Dentist (${inputData.dentistId})`,
-            to: inputData.patientEmail
-        }).save()
+            to: `${getEmail(inputData.patient, "patient")}`
+        }).save({ collection: 'notifications' })
 
         sendEmail(newNotificationPatient);
 
@@ -90,5 +107,4 @@ async function sendEmail(object) {
 export default {
   createNotificationDentist,
   createNotificationPatient,
-  createNotificationAccountDeletion
 }
