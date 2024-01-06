@@ -49,12 +49,17 @@ function initialize() {
     //get patient from personummer using mqtt service component
     subscribeShared(SUBSCRIPTION_SHARE_NAME, patient_publish_query, async (topic, payload, packet) => {
         try {
-            const patientNummer = JSON.parse(payload.toString()).Personnummer;
-            const patients = await Patient.findOne({ Personnummer: patientNummer }).select('-password');
-            const res = { success: true, patient: patients };
+            const patientId = JSON.parse(payload.toString()).patientId;
+            const patient = await Patient.findById(patientId).select('-password');
+
+            if(!patient) {
+                return { success: false, msg: 'Patient not found' }
+            }
+
+            const res = { success: true, patient: patient };
             // Publish the response
             publishResponse(packet, JSON.stringify(res), { qos: RESPONSE_QOS });
-            console.log('Queried patients:', patients);
+            console.log('Queried patients:', patient);
         } catch (error) {
             const msg = 'internal server error';
             publishResponse(packet, JSON.stringify({ success: false, msg }), { qos: RESPONSE_QOS });
