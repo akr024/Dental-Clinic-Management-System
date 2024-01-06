@@ -41,9 +41,13 @@ try {
 }
 })
 
-router.get('/:id', async (req, res) => {
-    publishAwaitingResponse(patient_publish_query, JSON.stringify({ patientId: req.params.id }), (topic, payload, packet) => {
+router.get('/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    // only allow the patient to access their own data
+    if (req.user._id !== req.params.id) {
+        return res.status(401).json({ msg: 'unauthorized' })
+    }
 
+    publishAwaitingResponse(patient_publish_query, JSON.stringify({ patientId: req.params.id }), (topic, payload, packet) => {
         const response = JSON.parse(payload.toString())
         console.log(response)
         if (response.success) {
