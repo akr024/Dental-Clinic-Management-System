@@ -1,5 +1,6 @@
 import { Appointment } from '../models/AppointmentModel.js'
 import { Clinic } from '../models/ClinicModel.js'
+import { Dentist } from '../models/DentistModel.js'
 
 import { addHours, isFuture, max, subHours } from 'date-fns'
 
@@ -43,6 +44,7 @@ async function createAppointment(inputAppointment) {
     return { success: false, msg: 'internal server error' }
   }
 }
+
 
 async function bookAppointment(input) {
   const session = await mongoose.startSession()
@@ -92,9 +94,32 @@ async function queryAppointments(input) {
   }
 }
 
+async function queryAppointmentsByDentistID(input) {
+
+  try {
+    console.log(input);
+    const dentistID = input.dentistId;
+    console.log(dentistID);
+
+  const dentist = await Dentist.findById(dentistID)
+  if (!dentist) {
+      return { success: false, message: 'Dentist not found' };
+  }
+  const appointment = await Appointment.find({
+    dentistId: dentistID,
+  }).select('clinicId patientId dateTime');
+    console.log(appointment);
+  return { success: true, appointments: appointment };
+
+} catch (error) {
+  return { success: false, message: error.message };
+}
+}
+
 export default {
   createAppointment,
   bookAppointment,
   queryAppointments,
+  queryAppointmentsByDentistID,
   MIN_HOURS_BEFORE_BOOKING
 }
