@@ -132,10 +132,25 @@ async function queryAppointments(input) {
   }
 }
 
+async function queryAppointmentsByDentistID(input) {
+
+  try {
+    const dentistID = input.dentistId;
+    const appointment = await Appointment.find({
+      dentistId : dentistID
+    }).select('clinicId patientId dateTime');
+    console.log(appointment);
+    return { success: true, appointments: appointment };
+} catch (error) {
+  return { success: false, message: error.message };
+}
+}
+
 export default {
   createAppointment,
   cancelAppointment,
   bookAppointment,
   queryAppointments,
+  queryAppointmentsByDentistID,
   MIN_HOURS_BEFORE_BOOKING
 }
