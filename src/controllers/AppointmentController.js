@@ -38,17 +38,12 @@ function handleAppointmentQuery(topic, payload, packet) {
 
   AppointmentService.queryAppointments(input)
     .then(response => publishResponse(packet, JSON.stringify(response), { qos: RESPONSE_QOS }));
-  
-  AppointmentService.queryAppointmentsByDentistID(input)
-  .then(response => publishResponse(packet, JSON.stringify(response), { qos: RESPONSE_QOS }));
-
 }
 function handleAppointmentIDQuery(topic, payload, packet) {
   const input = JSON.parse(payload.toString())
   
   AppointmentService.queryAppointmentsByDentistID(input)
   .then(response => publishResponse(packet, JSON.stringify(response), { qos: RESPONSE_QOS }));
-
 }
 
 
