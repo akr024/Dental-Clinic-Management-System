@@ -200,16 +200,16 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
             </Box>
             <Button variant="contained" sx={{ mt: 1 }}>See more</Button>
           </Box>
-
           <Box sx={{ display: tabValue === 1 ? 'flex' : 'none', flexDirection: 'column', flexGrow: 1, mt: 2 }}>
             <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
-              {reviews && reviews?.reviews?.length > 0 ? <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+              {reviews && reviews?.reviews?.length > 0 ? <List sx={{ width: '100%' }}>
                 {reviews.reviews.map((review, index) => {
-                  return <ReviewComponent key={index} reviewComponent review={review} />
+                  return <ReviewComponent key={index} review={review} />
                 })}
               </List> : <Typography>No review yet</Typography>}
             </Box>
             <Button variant="contained" fullWidth sx={{ mt: 1 }} onClick={onOpenReviewModalClick}>Leave A Review</Button>
+
           </Box>
         </Paper>
       </Slide>
