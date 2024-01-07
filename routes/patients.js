@@ -1,9 +1,7 @@
 import { Patient } from '../Models/patientSchema.js';
 import {
     publishResponse,
-    subscribe,
-    subscribeShared,
-    unsubscribe
+    subscribeShared
 } from 'mqtt-service';
 import {
     SUBSCRIPTION_SHARE_NAME,
