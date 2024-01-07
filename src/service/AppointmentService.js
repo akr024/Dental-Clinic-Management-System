@@ -69,7 +69,13 @@ async function cancelAppointment(input) {
     appointment.patientId = null
     appointment.save()
 
-    publish('appointment/cancelled', JSON.stringify({ appointmentId: input.appointmentId, patientId: input.patientId }))
+    const data = { 
+      appointmentId: input.appointmentId, 
+      patientId: input.patientId,
+      dentistId: appointment.dentistId,
+      dateTime: appointment.dateTime
+    }
+    publish('appointment/cancelled', JSON.stringify(data))
 
     return { success: true }
   } catch (err) {
