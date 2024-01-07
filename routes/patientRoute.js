@@ -4,7 +4,7 @@ import express from 'express'
 import passport from '../utils/authConfig.js';
 
 const router = express.Router()
-
+const appointment_patient_publish_retrieve = 'appointment/patient'
 
 
 router.post('/',async(req,res)=>{
@@ -72,6 +72,23 @@ router.delete('/:Personnummer',async(req,res)=>{
     } catch (error) {
         return res.status(500).json({msg:'patient deletion unsuccessful'})
     }
-    })
+})
+    
+    router.get('/:id/appointments', (req, res) => {
 
+        const patientId = req.params.id
+        publishAwaitingResponse(appointment_patient_publish_retrieve, JSON.stringify({ patientId: patientId }), (topic, payload, packet) => {
+            try {
+                const response = JSON.parse(payload.toString())
+                console.log(response);
+          if (response.success) {
+            res.status(200).json(response)
+          } else {
+            res.status(400).json(response.msg)
+          }
+        } catch (error) {
+            console.error('Error ', error);
+        }
+        })
+    })
  export default router
