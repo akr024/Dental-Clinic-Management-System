@@ -35,25 +35,20 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
   const mediaQueryMD = useMediaQuery(theme.breakpoints.up('md'));
 
   useEffect(() => {
-    setOpen(selectedClinic != null)
-    setTabValue(0)
-
-    if (selectedClinic && selectedClinic?._id !== lastSelectedClinic?._id) {
+    setOpen(selectedClinic != null)  
+    
+    if (selectedClinic && selectedClinic?._id !== lastSelectedClinic.current?._id) {
       lastSelectedClinic.current = selectedClinic;
+
+      setTabValue(0)
       setDate(new Date(selectedClinic.earliestAppointment));
 
       Api.get(`clinics/${selectedClinic?._id}/reviews`)
-      .then(response => {
-        setReviews(response.data)
-      })
-      .catch(err => {
-        console.log(err)
-      }
-      )
-  }
-    },
-    [selectedClinic]);
-  
+        .then(response => setReviews(response.data))
+        .catch(err => console.log(err))
+    }
+  }, [selectedClinic]);
+
   useEffect(() => {
     if (selectedClinic) {
       if(abortControllerRef.current) {
@@ -112,6 +107,21 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
   }
 
   const close = () => setOpen(false)
+
+  const onOpenReviewModalClick = () => {
+    if(isAuthenticated()) {
+      setReviewDialogOpen(true)
+    } else {
+      setSignInModalOpen(true)
+    }
+  }
+
+  const onReviewModalClosed = newReview => {
+    setReviewDialogOpen(false)
+    if(newReview) {
+      reviews.reviews.push(newReview)
+    }
+  }
 
   return (
     <Box
@@ -197,13 +207,16 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
             </Box>
             <Button variant="contained" sx={{ mt: 1 }}>See more</Button>
           </Box>
+          <Box sx={{ display: tabValue === 1 ? 'flex' : 'none', flexDirection: 'column', flexGrow: 1, mt: 2 }}>
+            <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
+              {reviews && reviews?.reviews?.length > 0 ? <List sx={{ width: '100%' }}>
+                {reviews.reviews.map((review, index) => {
+                  return <ReviewComponent key={index} review={review} />
+                })}
+              </List> : <Typography>No review yet</Typography>}
+            </Box>
+            <Button variant="contained" fullWidth sx={{ mt: 1 }} onClick={onOpenReviewModalClick}>Leave A Review</Button>
 
-          <Box sx={{ display: tabValue === 1 ? 'block' : 'none', mt: 2 }}>
-          {reviews && reviews?.reviews?.length > 0 ? <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-            {reviews.reviews.map((review, index) => {
-                return <ReviewComponent key={index} reviewComponent review={review} />})}
-            </List> :  <Typography>No review yet</Typography>}
-            <Button variant="contained" fullWidth sx={{ mt: 1 }} onClick={()=>setReviewDialogOpen(true)}>Leave A Review</Button>
           </Box>
         </Paper>
       </Slide>
@@ -218,7 +231,7 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
       />
       <ReviewModal
         open={reviewDialogOpen}
-        onClose={()=>setReviewDialogOpen(false)} selectedClinicId={selectedClinic?._id}>
+        onClose={onReviewModalClosed} selectedClinicId={selectedClinic?._id}>
       </ReviewModal>
     </Box>
   )

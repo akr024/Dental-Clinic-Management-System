@@ -39,7 +39,7 @@ function ReviewModal({ open, onClose, selectedClinicId }) {
         const data = await response.data;
         if (data.success) {
           setSuccessAlert(true);
-          onClose();
+          onClose(data.review);
         }
       } catch (error) {
         console.error("Error submitting review:", error);
