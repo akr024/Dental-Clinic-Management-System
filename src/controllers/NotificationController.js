@@ -2,8 +2,8 @@ import { subscribe } from 'mqtt-service'
 import NotificationService from '../service/NotificationService.js'
 import { errorHandlerDecorator } from './ErrorHandlerDecorator.js'
 
-const TOPIC_NOTIFICATION_CREATE_DENTIST = 'appointment/booked'
-const TOPIC_NOTIFICATION_CREATE_PATIENT = 'appointment/cancelled'
+const TOPIC_APPOINTMENT_BOOKED = 'appointment/booked'
+const TOPIC_APPOINTMENT_CANCELLED = 'appointment/cancelled'
 
 function handleNotificationCreatePatient(topic, payload, packet) {
     const data = JSON.parse(payload.toString())
@@ -18,8 +18,8 @@ function handleNotificationCreatePatient(topic, payload, packet) {
   }
 
 function initialize() {
-  subscribe(TOPIC_NOTIFICATION_CREATE_DENTIST, errorHandlerDecorator(handleNotificationCreateDentist))
-  subscribe(TOPIC_NOTIFICATION_CREATE_PATIENT, errorHandlerDecorator(handleNotificationCreatePatient))
+  subscribe(TOPIC_APPOINTMENT_BOOKED, errorHandlerDecorator(handleNotificationCreateDentist))
+  subscribe(TOPIC_APPOINTMENT_CANCELLED, errorHandlerDecorator(handleNotificationCreatePatient))
 
 }
 
