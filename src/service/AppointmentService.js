@@ -54,12 +54,12 @@ async function cancelAppointment(input) {
 
     const appointment = await Appointment.findById(input.appointmentId)
 
-    if (!isFuture(subHours(appointment.dateTime, MIN_HOURS_BEFORE_CANCELLING))) {
-      return { success: false, msg: `appointment must be cancelled at least ${MIN_HOURS_BEFORE_CANCELLING} hour in advance` }
-    }
-
     if (!appointment) {
       return { success: false, msg: `Appointment with id ${input.appointmentId} doesn't exist` }
+    }
+
+    if (!isFuture(subHours(appointment.dateTime, MIN_HOURS_BEFORE_CANCELLING))) {
+      return { success: false, msg: `appointment must be cancelled at least ${MIN_HOURS_BEFORE_CANCELLING} hour in advance` }
     }
 
     if (appointment.patientId != input.patientId) {
