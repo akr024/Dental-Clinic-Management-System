@@ -116,6 +116,13 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
     }
   }
 
+  const onReviewModalClosed = newReview => {
+    setReviewDialogOpen(false)
+    if(newReview) {
+      reviews.reviews.push(newReview)
+    }
+  }
+
   return (
     <Box
       ref={containerRef}
@@ -224,7 +231,7 @@ function ClinicDetailsComponent({ selectedClinic, setSignInModalOpen }) {
       />
       <ReviewModal
         open={reviewDialogOpen}
-        onClose={() => setReviewDialogOpen(false)} selectedClinicId={selectedClinic?._id}>
+        onClose={onReviewModalClosed} selectedClinicId={selectedClinic?._id}>
       </ReviewModal>
     </Box>
   )
