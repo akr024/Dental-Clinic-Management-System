@@ -2,7 +2,7 @@ const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const PatientModel = require('../models/Patient')
 const DentistModel = require('../models/dentistSchema')
-require('../models/clinicSchema')
+require('../models/ClinicModel')
 passport.use(
   'loginPatient',
   new localStrategy(
@@ -13,6 +13,8 @@ passport.use(
     async (personnummer, password, done) => {
       try {
         let user = await PatientModel.findOne({ Personnummer: personnummer });
+        let userList = await PatientModel.find();
+        console.log(userList)
         if (!user) {
           return done(null, false, { message: 'User not found' });
         }
