@@ -13,3 +13,7 @@
     * MQTT_CERT_PATH (optional)
     * MQTT_CERT_KEY_PATH (optional)
 3. Run `npm run dev` or `npm run start`
+
+## Running tests
+
+You can run the tests with `npm test`
