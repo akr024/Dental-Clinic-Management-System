@@ -9,10 +9,11 @@ async function getEmail(id, userType) {
     try{
         if(userType==="dentist"){
             const result = await userDBConnection.collection('dentists').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+            return result.email;
         } else {
             const result = await userDBConnection.collection('patients').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+            return result.email;
         }
-        return result.email;
     } catch (err){
         console.log(err.stack)
         return { success: false, msg: 'internal email retrieval error' }
@@ -67,12 +68,12 @@ async function createNotificationPatient(inputData) {
             title: `Appointment (${inputData.appointmentId}) cancelled`,
             time: new Date(),
             desc: `Appointment with ID: ${inputData.appointmentId} has been cancelled at clinic (${inputData.clinicId}) by Dentist (${inputData.dentistId})`,
-            to: `${getEmail(inputData.patient, "patient")}`
-        }).save({ collection: 'notifications' })
+            to: `${await getEmail(inputData.patient, "patient")}`
+        }).save()
 
         sendEmail(newNotificationPatient);
 
-        return { success: true, newNotificationDoctor }
+        return { success: true, newNotificationPatient }
     } catch (err) {
         console.log(err.stack)
         return {success: false, msg: 'internal server error'}
@@ -84,8 +85,8 @@ async function sendEmail(object) {
         let transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.USER,
-                pass: process.env.ACCESS_TOKEN //access token obtained using 2FA
+                user: process.env.EMAIL,
+                pass: process.env.ACCESS_TOKEN
             }
             });
     
@@ -96,8 +97,7 @@ async function sendEmail(object) {
             text: object.desc
         });
     
-        console.log("Message sent: %s", info.messageId);
-
+        console.log("Message sent: %s", info.response);
     } catch(err){
         console.log(err.stack)
         return {success: false, msg: 'internal mail error'}

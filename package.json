@@ -19,5 +19,6 @@
     "mqtt-service": "git+ssh://git@git.chalmers.se:courses/dit355/2023/student-teams/dit356-2023-09/mqttservicepackage.git#v1.0.0",
     "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1"
-  }
+  },
+  "devDependencies": {}
 }
