@@ -1,3 +1,4 @@
+import { publish } from 'mqtt-service'
 import { Appointment } from '../models/AppointmentModel.js'
 import { Clinic } from '../models/ClinicModel.js'
 import { Dentist } from '../models/DentistModel.js'
@@ -8,6 +9,7 @@ import mongoose from 'mongoose'
 
 const MIN_HOURS_BEFORE_APPOINTMENT_CREATION = 2
 const MIN_HOURS_BEFORE_BOOKING = 1
+const MIN_HOURS_BEFORE_CANCELLING = 1
 
 async function createAppointment(inputAppointment) {
   try {
@@ -45,6 +47,43 @@ async function createAppointment(inputAppointment) {
   }
 }
 
+async function cancelAppointment(input) {
+  try {
+    if (!input?.appointmentId || !input?.patientId) {
+      return { success: false, msg: 'appointmentId and patientId required' }
+    }
+
+    const appointment = await Appointment.findById(input.appointmentId)
+
+    if (!appointment) {
+      return { success: false, msg: `Appointment with id ${input.appointmentId} doesn't exist` }
+    }
+
+    if (!isFuture(subHours(appointment.dateTime, MIN_HOURS_BEFORE_CANCELLING))) {
+      return { success: false, msg: `appointment must be cancelled at least ${MIN_HOURS_BEFORE_CANCELLING} hour in advance` }
+    }
+
+    if (appointment.patientId != input.patientId) {
+      return { success: false, msg: `Appointment with id ${input.appointmentId} is not booked by patient with id ${input.patientId}` }
+    }
+
+    appointment.patientId = null
+    appointment.save()
+
+    const data = { 
+      appointmentId: input.appointmentId, 
+      patientId: input.patientId,
+      dentistId: appointment.dentistId,
+      dateTime: appointment.dateTime
+    }
+    publish('appointment/cancelled', JSON.stringify(data))
+
+    return { success: true }
+  } catch (err) {
+    console.log(err.stack)
+    return { success: false, msg: 'internal server error' }
+  }
+}
 
 async function bookAppointment(input) {
   const session = await mongoose.startSession()
@@ -116,6 +155,7 @@ async function queryAppointmentsByDentistID(input) {
 
 export default {
   createAppointment,
+  cancelAppointment,
   bookAppointment,
   queryAppointments,
   queryAppointmentsByDentistID,

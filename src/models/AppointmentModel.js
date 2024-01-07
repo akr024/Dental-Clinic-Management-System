@@ -7,4 +7,6 @@ const appointmentSchema = Schema({
   dateTime: { type: Date, required: true }
 });
 
+appointmentSchema.index({ dateTime: 1 })
+
 export const Appointment = model('appointment', appointmentSchema)
