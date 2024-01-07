@@ -8,7 +8,7 @@ const app = express();
 
 app.use(express.json());
 app.get('/', (req,res) => {
-  res.send('Localhost:8080');
+  res.send('Localhost:3001');
 })
 
 //routers for schema elements

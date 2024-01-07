@@ -1,7 +1,26 @@
 import express from 'express'
 import {publishAwaitingResponse} from 'mqtt-service'
 import { TOPIC_DENTIST_CREATE, TOPIC_DENTIST_MODIFY, TOPIC_DENTIST_QUERY } from '../config.js'
+
 const router = express.Router();
+const appointment_publish_retrieve = 'appointments/retrieve'
+router.get('/:id/appointments', (req, res) => {
+
+    const dentistId = req.params.id
+    publishAwaitingResponse(appointment_publish_retrieve, JSON.stringify({ dentistId: dentistId }), (topic, payload, packet) => {
+        try {
+      const response = JSON.parse(payload.toString())
+      if (response.success) {
+        res.status(200).json(response)
+      } else {
+        res.status(400).json(response.msg)
+      }
+    } catch (error) {
+        console.error('Error ', error);
+    }
+    })
+})
+
 
 router.post('/',async(req,res)=>{
     try {
