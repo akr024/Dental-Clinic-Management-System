@@ -20,25 +20,6 @@ async function getEmail(id, userType) {
     }
 }
 
-/*async function createNotificationAccountDeletion(inputData){
-    try{        
-        const newNotificationAccountDeletion = await new Notification({
-            title: `Account ${inputData.accountId} Deletion Confirmation`,
-            time: new Date(),
-            desc: `Account with ID: ${inputData.accountId} has been deleted from the platform. Sad to see you go :(`,
-            to: getEmail(inputData.accountId)
-        }).save({ collection: 'notifications' })
-
-        sendEmail(newNotificationAccountDeletion);
-
-        return { success: true, newNotificationDoctor }
-
-    } catch (err){
-        console.log(err.stack)
-        return { success: false, msg: 'internal server error' }
-    }
-} */
-
 async function createNotificationDentist(inputData) {
     try{
         const dateTime = new Date(inputData.dateTime)
