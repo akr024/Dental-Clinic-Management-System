@@ -1,7 +1,6 @@
 import { publish } from 'mqtt-service'
 import { Appointment } from '../models/AppointmentModel.js'
 import { Clinic } from '../models/ClinicModel.js'
-import { Dentist } from '../models/DentistModel.js'
 
 import { addHours, isFuture, max, subHours } from 'date-fns'
 
@@ -137,17 +136,11 @@ async function queryAppointmentsByDentistID(input) {
 
   try {
     const dentistID = input.dentistId;
-
-  const dentist = await Dentist.findById(dentistID)
-  if (!dentist) {
-      return { success: false, message: 'Dentist not found' };
-  }
-  const appointment = await Appointment.find({
-    dentistId: dentistID,
-  }).select('clinicId patientId dateTime');
+    const appointment = await Appointment.find({
+      dentistId : dentistID
+    }).select('clinicId patientId dateTime');
     console.log(appointment);
-  return { success: true, appointments: appointment };
-
+    return { success: true, appointments: appointment };
 } catch (error) {
   return { success: false, message: error.message };
 }
