@@ -49,8 +49,8 @@ function initialize() {
     //get Dentist from personummer using mqtt service component
     subscribeShared(SUBSCRIPTION_SHARE_NAME, TOPIC_DENTIST_QUERY, async (topic, payload, packet) => {
         try {
-            const dentistNummer = JSON.parse(payload.toString()).personnummer;
-            const dentists = await Dentist.findOne({ personnummer: dentistNummer }).select('-password');
+            const dentistNummer = JSON.parse(payload.toString())._id;
+            const dentists = await Dentist.findOne({ _id: dentistNummer }).select('-password');
             const res = { success: true, dentist: dentists };
             // Publish the response
             publishResponse(packet, JSON.stringify(res), { qos: RESPONSE_QOS });
@@ -64,8 +64,8 @@ function initialize() {
     //modify dentist from personnummer
     subscribeShared(SUBSCRIPTION_SHARE_NAME, TOPIC_DENTIST_MODIFY,async(topic,payload,packet) => {
         try{
-            const dentistNummer = JSON.parse(payload.toString()).personnummer;
-            const dentists = await Dentist.findOne({ personnummer: dentistNummer }).select('-password');
+            const dentistNummer = JSON.parse(payload.toString())._id;
+            const dentists = await Dentist.findOne({ _id: dentistNummer }).select('-password');
             if(!dentists){
                 const msg = "Dentist not found";
                 publishResponse(packet,JSON.stringify({success:false,msg}),{qos: RESPONSE_QOS})
@@ -73,7 +73,7 @@ function initialize() {
             }
             const dentistData = JSON.parse(payload.toString())
             const updateDentist = new Dentist({
-                personnummer: dentistNummer,
+                personnummer: dentists.personnummer,
                 firstName: dentistData.firstName? dentistData.firstName : dentists.firstName,
                 lastName: dentistData.lastName? dentistData.lastName: dentists.lastName,
                 password: dentistData.password? dentistData.password:dentists.password,
