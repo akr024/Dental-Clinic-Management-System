@@ -97,9 +97,7 @@ async function queryAppointments(input) {
 async function queryAppointmentsByDentistID(input) {
 
   try {
-    console.log(input);
     const dentistID = input.dentistId;
-    console.log(dentistID);
 
   const dentist = await Dentist.findById(dentistID)
   if (!dentist) {
