@@ -1,6 +1,6 @@
 import {mongoose } from "mongoose";
 
-var dentistSchema = new mongoose.Schema(
+var dentistSchema = new Schema(
     {
         username:{
             type: String,
