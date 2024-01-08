@@ -12,7 +12,7 @@ describe('DentistService', ()=>{
     describe('createDentist',()=>{
         it('should return error message if credentials are missing',async()=>{
             const input = {}
-            const expected = {success: false,msg: 'credentials are missing'}
+            const expected = {success: false,msg: 'request body is invalid'}
             const result = await DentistService.createDentist(input)
             expect(result).toEqual(expected)
         })
