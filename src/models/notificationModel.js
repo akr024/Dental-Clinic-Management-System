@@ -15,10 +15,10 @@ const notificationSchema = mongoose.Schema(
             type: String,
             required: true
         },
-        to: {
+        to: [{
             type: String,
             required: true
-        }
+        }]
     }
 );
 

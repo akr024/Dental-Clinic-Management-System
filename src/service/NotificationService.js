@@ -5,22 +5,27 @@ import mongoose from 'mongoose';
 import nodemailer from "nodemailer";
 import { userDBConnection } from "../../app.js";
 
-async function getEmail(id, userType) {
+async function getEmailDentist(id) {
     try{
-        if(userType==="dentist"){
-            const result = await userDBConnection.collection('dentists').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
-            return result.email;
-        } else {
-            const result = await userDBConnection.collection('patients').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
-            return result.email;
-        }
+        const result = await userDBConnection.collection('dentists').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+        return result.email;
     } catch (err){
         console.log(err.stack)
         return { success: false, msg: 'internal email retrieval error' }
     }
 }
 
-async function createNotificationDentist(inputData) {
+async function getEmailPatient(id) {
+    try{
+        const result = await userDBConnection.collection('patients').findOne({ _id: new mongoose.Types.ObjectId(id) }, { projection: { "email": 1, "_id": 0 } });
+        return result.email;
+    } catch (err){
+        console.log(err.stack)
+        return { success: false, msg: 'internal email retrieval error' }
+    }
+}
+
+async function createNotificationBook(inputData) {
     try{
         const dateTime = new Date(inputData.dateTime)
         
@@ -28,7 +33,7 @@ async function createNotificationDentist(inputData) {
             title: `Appointment booked on ${dateTime}`,
             time: new Date(),
             desc: `Appointment for Dentist (${inputData.dentistId}) has been booked at clinic (${inputData.clinicId}) by Patient (${inputData.patient})`,
-            to: `${getEmail(inputData.dentistId, "dentist")}`
+            to: [`${await getEmailDentist(inputData.dentistId)}`, `${await getEmailPatient(inputData.patient)}`]
         }).save()
 
         sendEmail(newNotificationDoctor);
@@ -41,15 +46,15 @@ async function createNotificationDentist(inputData) {
     }
 }
 
-async function createNotificationPatient(inputData) {
+async function createNotificationCancel(inputData) {
     try{
         const dateTime = new Date(inputData.dateTime)
 
         const newNotificationPatient = await new Notification({
-            title: `Appointment (${inputData.appointmentId}) cancelled`,
+            title: `Appointment (${inputData.appointmentId}) on ${dateTime} cancelled`,
             time: new Date(),
-            desc: `Appointment with ID: ${inputData.appointmentId} has been cancelled at clinic (${inputData.clinicId}) by Dentist (${inputData.dentistId})`,
-            to: `${await getEmail(inputData.patient, "patient")}`
+            desc: `Appointment with ID: ${inputData.appointmentId} on ${dateTime} has been cancelled at clinic (${inputData.clinicId}) by Dentist (${inputData.dentistId})`,
+            to: [`${await getEmailDentist(inputData.dentistId)}`, `${await getEmailPatient(inputData.patient)}`]
         }).save()
 
         sendEmail(newNotificationPatient);
@@ -86,6 +91,6 @@ async function sendEmail(object) {
 }
 
 export default {
-  createNotificationDentist,
-  createNotificationPatient,
+  createNotificationCancel,
+  createNotificationBook
 }
