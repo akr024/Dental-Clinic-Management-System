@@ -20,9 +20,9 @@ describe("PatientService",()=>{
         })
         it('should return an error if patient already exists',async()=>{
             const input = {
-                Personnummer: "0312075632",
-                Firstname: "John",
-                Lastname: "Doe",
+                personnummer: "0312075632",
+                firstName: "John",
+                lastName: "Doe",
                 password: "pass200",
                 email : "doejohn@gmail.com"
             }
@@ -33,17 +33,17 @@ describe("PatientService",()=>{
           });
         it('should create a new patient',async()=>{
             const inputPatient = {
-                Personnummer: "0312075632",
-                Firstname: "John",
-                Lastname: "Doe",
+                personnummer: "0312075632",
+                firstName: "John",
+                lastName: "Doe",
                 password: "pass200",
                 email : "doejohn@gmail.com"
               };
         
               jest.spyOn(Patient, 'create').mockResolvedValueOnce({
-                Personnummer: "0312075632",
-                Firstname: "John",
-                Lastname: "Doe",
+                personnummer: "0312075632",
+                firstName: "John",
+                lastName: "Doe",
                 password: "pass200",
                 email : "doejohn@gmail.com"
               });
@@ -57,12 +57,12 @@ describe("PatientService",()=>{
 
         it('should return an error if patient is not found', async()=>{
             const input = {
-            Personnummer: "0312075632",
-            Firstname: "John",
-            Lastname: "Doe",
-            password: "pass200",
-            email : "doejohn@gmail.com"
-        }
+                personnummer: "0312075632",
+                firstName: "John",
+                lastName: "Doe",
+                password: "pass200",
+                email : "doejohn@gmail.com"
+            }
         const expected = { success: false, msg:"cannot find patient"}
         mockingoose(Patient).toReturn(null,'findOneAndDelete')
         const result = await PatientService.deletePatient(input);
@@ -71,14 +71,14 @@ describe("PatientService",()=>{
 
         it('should delete patient',async()=>{
             const input = {
-                Personnummer: "0312075632",
-                Firstname: "John",
-                Lastname: "Doe",
+                personnummer: "0312075632",
+                firstName: "John",
+                lastName: "Doe",
                 password: "pass200",
                 email : "doejohn@gmail.com"
             }
             
-            const expected = {success: true, msg: `Deleted patient with personummer: ${input.Personnummer}`}
+            const expected = {success: true, msg: `Deleted patient with personummer: ${input.personnummer}`}
             mockingoose(Patient).toReturn(input,'findOneAndDelete')
             const result = await PatientService.deletePatient(input)
             expect(result).toEqual(expected)
@@ -89,9 +89,9 @@ describe("PatientService",()=>{
 
         it('should return an error if patient is not found',async ()=>{
             const input = {
-                Personnummer: "0312075632",
-                Firstname: "John",
-                Lastname: "Doe",
+                personnummer: "0312075632",
+                firstName: "John",
+                lastName: "Doe",
                 password: "pass200",
                 email : "doejohn@gmail.com"
             }

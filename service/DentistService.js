@@ -34,8 +34,7 @@ async function createDentist(inputDentist){
 async function queryDentists(inputDentist) {
     try {
         const dentistId = inputDentist.dentistId;
-        const dentist = await Dentist.findById(dentistId).select('-password');
-
+        const dentist = await Dentist.findById(dentistId).select('-password')
         if(!dentist) {
             return { success: false, msg: 'Dentist not found' }
         }
@@ -46,8 +45,8 @@ async function queryDentists(inputDentist) {
         return res
     } catch (error) {
         const msg = 'internal server error';
-        console.error('Error querying Dentists:', error);
-        return {success: false, msg ,qos: RESPONSE_QOS}
+      //  console.error('Error querying Dentists:', error);
+        return {success: false, msg}
     }
 }
 async function modifyDentist(inputDentist) {
@@ -63,8 +62,7 @@ async function modifyDentist(inputDentist) {
        return res;
     } catch(error){
         const msg = 'internal server error';
-        console.error('Error querying Dentists:', error);
-        return {success: false, msg ,qos: RESPONSE_QOS}
+        return {success: false, msg}
     }
 }
 

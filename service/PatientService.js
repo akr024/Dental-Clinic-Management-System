@@ -13,9 +13,9 @@ async function createPatient(inputPatient){
             return{success: false,msg: 'credentials are missing'}
         }
         const newPatient = await new Patient({
-            Personnummer: inputPatient.personnummer,
-            Firstname: inputPatient.firstName,
-            Lastname: inputPatient.lastName,
+            personnummer: inputPatient.personnummer,
+            firstName: inputPatient.firstName,
+            lastName: inputPatient.lastName,
             password: inputPatient.password,
             email: inputPatient.email
         });
@@ -25,12 +25,10 @@ async function createPatient(inputPatient){
     }
     catch (error) {
         if (error.code === 11000) {
-            console.error('Duplicate key error. Patient with the same Personnummer already exists.');
             const msg = 'Patient with the same Personnummer already exists.';
             return { success: false, msg: msg}
             
         } else {
-            console.error('Error:', error);
             const msg = 'internal server error';
             return { success: false, msg: msg}
         }
@@ -38,10 +36,13 @@ async function createPatient(inputPatient){
 }
 
 async function deletePatient(inputPatient){
-    const patientNummer = inputPatient.Personnummer;
+    const patientNummer = inputPatient.personnummer;
         try {
-            const patients = await Patient.findOneAndDelete({ Personnummer: patientNummer }).exec();
-            console.log('Deleted patient with personummer: ', patients);
+            const patients = await Patient.findOneAndDelete({ personnummer: patientNummer }).exec();
+            if(!patients){
+                return {msg: "cannot find patient", success: false}
+            }
+            return {msg: `Deleted patient with personummer: ${patientNummer}`, "success": true}
         } catch (error) {
             console.error('Error ', error);
         }
@@ -62,8 +63,7 @@ async function queryPatients(inputPatient) {
         return res
     } catch (error) {
         const msg = 'internal server error';
-        console.error('Error querying patients:', error);
-        return {success: false, msg ,qos: RESPONSE_QOS}
+        return {success: false, msg}
     }
 }
 
