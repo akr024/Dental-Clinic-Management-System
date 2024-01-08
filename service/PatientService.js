@@ -4,18 +4,18 @@ async function createPatient(inputPatient){
 
     try {
         if(
-            !inputPatient?.Personnummer||
-            !inputPatient?.Firstname||
-            !inputPatient?.Lastname||
+            !inputPatient?.personnummer||
+            !inputPatient?.firstName||
+            !inputPatient?.lastName||
             !inputPatient?.password||
             !inputPatient?.email
         ){
             return{success: false,msg: 'credentials are missing'}
         }
         const newPatient = await new Patient({
-            Personnummer: inputPatient.Personnummer,
-            Firstname: inputPatient.Firstname,
-            Lastname: inputPatient.Lastname,
+            Personnummer: inputPatient.personnummer,
+            Firstname: inputPatient.firstName,
+            Lastname: inputPatient.lastName,
             password: inputPatient.password,
             email: inputPatient.email
         });

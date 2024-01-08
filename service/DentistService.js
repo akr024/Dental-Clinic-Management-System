@@ -11,7 +11,7 @@ async function createDentist(inputDentist){
             !inputDentist?.password||
             !inputDentist?.email
         ){
-            return{success: false,msg: 'credentials are missing'}
+            return{success: false,msg: 'request body is invalid'}
         }
         const newDentist = await new Dentist({
             username: inputDentist.username,
