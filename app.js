@@ -2,6 +2,7 @@ import { initializeMqttUsingEnvVariables } from 'mqtt-service';
 //routes
 import mongoose from 'mongoose';
 import patientRouter from './routes/patients.js';
+import dentistRouter from './routes/dentist.js';
 
 
 // Variables
@@ -17,6 +18,7 @@ mongoose
     const mqttClientService = initializeMqttUsingEnvVariables();
     mqttClientService.on('connect', () => {
       patientRouter.initialize();
+      dentistRouter.initialize();
     })
   })
   .catch((error) => {
