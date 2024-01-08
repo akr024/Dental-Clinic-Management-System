@@ -1,4 +1,4 @@
-import { Schema,mongoose } from "mongoose";
+import {mongoose } from "mongoose";
 
 var patientSchema = new mongoose.Schema(
     {
@@ -23,7 +23,8 @@ var patientSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        appointments: [{ type: Schema.Types.ObjectId, ref: 'appointment' }]
+        appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'appointment' }]
+        
     });
 
 var Patient = mongoose.model('Patient', patientSchema);
