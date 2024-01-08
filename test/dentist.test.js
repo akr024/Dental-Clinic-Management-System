@@ -27,7 +27,6 @@ describe('DentistService', ()=>{
                 email : "doejohn@gmail.com"
               };
           
-              // Mocking dentist.create to resolve with the saved dentist
               jest.spyOn(Dentist, 'create').mockResolvedValueOnce({
                 _id: '6568c3cf53596018c06d775d',
                 username: "user200",
@@ -61,7 +60,7 @@ describe('DentistService', ()=>{
     })
     describe('modifyDentist',()=>{
         it('should modify dentist object',async()=>{
-            const inputDentist = {
+            const newDentist = {
                 dentistId: '6568c3cf53596018c06d775d',
                 username: "user200",
                 personnummer: "0312075632",
@@ -71,7 +70,7 @@ describe('DentistService', ()=>{
                 email : "doejane@gmail.com"
               };
           
-              const existingDentist = {
+              const oldDentist = {
                 _id: '6568c3cf53596018c06d775d',
                 username: "user200",
                 personnummer: "0312075632",
@@ -81,14 +80,12 @@ describe('DentistService', ()=>{
                 email : "doejohn@gmail.com"
               };
           
-              // Mocking Dentist.findById to resolve with an existing dentist
-              jest.spyOn(Dentist, 'findById').mockResolvedValueOnce(existingDentist);
+              jest.spyOn(Dentist, 'findById').mockResolvedValueOnce(oldDentist);
           
-              // Mocking Dentist.updateOne to resolve with a successful update result
               jest.spyOn(Dentist, 'updateOne').mockResolvedValueOnce({ nModified: 1 });
           
-              const result = await DentistService.modifyDentist(inputDentist);
-              const expected = {success: true, dentist: inputDentist}
+              const result = await DentistService.modifyDentist(newDentist);
+              const expected = {success: true, dentist: newDentist}
               })
         
     })

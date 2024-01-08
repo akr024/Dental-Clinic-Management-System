@@ -28,33 +28,30 @@ describe("PatientService",()=>{
             }
             jest.spyOn(Patient, 'create').mockRejectedValue({ code: 11000 });
             const result = await PatientService.createPatient(input);
-            expect(result.success).toBe(false);
-            expect(result.msg).toEqual('Patient with the same Personnummer already exists.');
+            const expected = {success: false, msg: 'Patient with the same Personnummer already exists.'}
+            expect(result).toEqual(expected);
           });
         it('should create a new patient',async()=>{
             const inputPatient = {
-                Personnummer: 'uniquePersonnummer',
-                Firstname: 'John',
-                Lastname: 'Doe',
-                password: 'password123',
-                email: 'john.doe@example.com',
+                Personnummer: "0312075632",
+                Firstname: "John",
+                Lastname: "Doe",
+                password: "pass200",
+                email : "doejohn@gmail.com"
               };
-          
-              // Mocking Patient.create to resolve with the saved patient
+        
               jest.spyOn(Patient, 'create').mockResolvedValueOnce({
                 _id: '6568c3cf53596018c06d775d',
-                Personnummer: 'uniquePersonnummer',
-                Firstname: 'John',
-                Lastname: 'Doe',
-                password: 'password123',
-                email: 'john.doe@example.com'
+                Personnummer: "0312075632",
+                Firstname: "John",
+                Lastname: "Doe",
+                password: "pass200",
+                email : "doejohn@gmail.com"
               });
           
               const result = await PatientService.createPatient(inputPatient);
-          
-              expect(result.success).toBe(true);
-              expect(result.msg).toBeUndefined(); // No error message
-              expect(result.patient).toBeDefined();
+              const expected = {success: true, patient: inputPatient}
+              expect(result).toEqual(expected)
             });
         })
     describe('deletePatient',()=>{
