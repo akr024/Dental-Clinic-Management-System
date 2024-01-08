@@ -41,7 +41,6 @@ describe("PatientService",()=>{
               };
         
               jest.spyOn(Patient, 'create').mockResolvedValueOnce({
-                _id: '6568c3cf53596018c06d775d',
                 Personnummer: "0312075632",
                 Firstname: "John",
                 Lastname: "Doe",

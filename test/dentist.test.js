@@ -18,7 +18,6 @@ describe('DentistService', ()=>{
         })
         it('should create a new dentist',async()=>{
             const inputDentist = {
-                _id: '6568c3cf53596018c06d775d',
                 username: "user200",
                 personnummer: "0312075632",
                 firstName: "John",
@@ -28,7 +27,6 @@ describe('DentistService', ()=>{
               };
           
               jest.spyOn(Dentist, 'create').mockResolvedValueOnce({
-                _id: '6568c3cf53596018c06d775d',
                 username: "user200",
                 personnummer: "0312075632",
                 firstName: "John",
@@ -71,7 +69,6 @@ describe('DentistService', ()=>{
               };
           
               const oldDentist = {
-                _id: '6568c3cf53596018c06d775d',
                 username: "user200",
                 personnummer: "0312075632",
                 firstName: "John",
