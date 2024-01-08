@@ -1,7 +1,12 @@
-import {model,Schema} from 'mongoose';
+import {mongoose } from "mongoose";
 
 var dentistSchema = new Schema(
     {
+        username:{
+            type: String,
+            required: true,
+            unique: true
+        },
         personnummer: {
             type: String,
             required: true,
@@ -23,9 +28,10 @@ var dentistSchema = new Schema(
             type: String,
             required: true
         },
-        appointments: [{ type: Schema.Types.ObjectId, ref: 'appointment' }],
-        clinics: [{ type: Schema.Types.ObjectId, ref: 'clinic' }]
+        appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'appointment' }],
+        clinics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'clinic' }]
+        
     });
 
-var Dentist = model('Dentist', dentistSchema);
-export { Dentist};
+var Dentist = mongoose.model('Dentist', dentistSchema);
+export { Dentist };
