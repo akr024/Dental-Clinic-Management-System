@@ -100,6 +100,8 @@ async function bookAppointment(input) {
     await appointment.save()
     await session.commitTransaction()
 
+    publish('appointment/booked', JSON.stringify(appointment))
+
     return { success: true }
   } catch (err) {
     console.log(err.stack)
