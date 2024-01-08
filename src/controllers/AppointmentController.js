@@ -51,7 +51,7 @@ function handleAppointmentDentistIDQuery(topic, payload, packet) {
 function handleAppointmentPatientIDQuery(topic, payload, packet) {
   const input = JSON.parse(payload.toString())
   
-  AppointmentService.queryAppointmentsByDentistID(input)
+  AppointmentService.queryAppointmentsByPatientID(input)
   .then(response => publishResponse(packet, JSON.stringify(response), { qos: RESPONSE_QOS }));
 }
 
