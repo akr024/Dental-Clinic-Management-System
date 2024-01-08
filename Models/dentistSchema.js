@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import {model,Schema} from 'mongoose';
 
-var dentistSchema = new mongoose.Schema(
+var dentistSchema = new Schema(
     {
         personnummer: {
             type: String,
@@ -27,5 +27,5 @@ var dentistSchema = new mongoose.Schema(
         clinics: [{ type: Schema.Types.ObjectId, ref: 'clinic' }]
     });
 
-var Dentist = mongoose.model('Dentist', dentistSchema);
+var Dentist = model('Dentist', dentistSchema);
 export { Dentist};
