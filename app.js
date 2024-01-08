@@ -17,7 +17,7 @@ mongoose
 
     const mqttClientService = initializeMqttUsingEnvVariables();
     mqttClientService.on('connect', () => {
-     // patientController.initialize();
+      patientController.initialize();
       dentistController.initialize();
     })
   })
