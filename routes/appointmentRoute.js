@@ -1,6 +1,6 @@
 import express from 'express'
 import {publishAwaitingResponse} from 'mqtt-service'
-import { appointment_publish_create } from '../config.js';
+import { TOPIC_APPOINTMENT_CREATE } from '../config.js';
 const router = express.Router();
 
 router.post('/', async (req,res) => {
@@ -12,14 +12,13 @@ router.post('/', async (req,res) => {
             ){
             res.status(400).json({msg:'Date and time is missing'})
         } else{
-            //Also need availability:True, when creating a new appointment from dentist side 
             const newAppointment = {
                 clinicId: req.body.clinicId,
                 dentistId: req.body.dentistId,
                 dateTime: req.body.dateTime,
                 availability: true
             }
-            publishAwaitingResponse(appointment_publish_create,JSON.stringify(newAppointment),(topic,payload,packet)=>{
+            publishAwaitingResponse(TOPIC_APPOINTMENT_CREATE,JSON.stringify(newAppointment),(topic,payload,packet)=>{
     
                 const response = JSON.parse(payload.toString())
                 if(response.success){
