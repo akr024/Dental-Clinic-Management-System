@@ -11,7 +11,6 @@ describe('NotificationService', () => {
 
   describe('createNotificationCancel', () => {
     it('should create a notification for a cancelled appointment and send an email', async () => {
-      // Mock the required data for the test
       const inputData = {
         appointmentId: '60d7e3e0a3b4e4a2c8a7e3d1',
         dateTime: '2024-01-08T12:00:00.000Z',
@@ -20,7 +19,6 @@ describe('NotificationService', () => {
         patient: '6569db7e8921f50e6fc08f60',
       };
 
-      // Mock the expected result
       const expectedNotification = {
         title: `Appointment (60d7e3e0a3b4e4a2c8a7e3d1) on ${new Date(inputData.dateTime)} cancelled`,
         time: expect.any(Date),
@@ -28,7 +26,6 @@ describe('NotificationService', () => {
         to: ['dentistplatform2@gmail.com', 'dentistplatform2@gmail.com']
       };
 
-      // Call the NotificationService function
       const result = await NotificationService.createNotificationCancel(inputData);
       console.log(result.newNotificationPatient);
       const result2 = {
@@ -38,11 +35,8 @@ describe('NotificationService', () => {
         to: result.newNotificationPatient.to
       }
 
-      // Assert the result
       expect(result.success).toBe(true);
       expect(result2).toEqual(expectedNotification);
     });
-
-    // Add more test cases as needed
   });
 });
