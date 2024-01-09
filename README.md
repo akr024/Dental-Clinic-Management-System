@@ -14,7 +14,7 @@ Once the library has been cloned into the local environment, these are the steps
  - MONGO_URL_EMAIL - This is the mongo database connection URL to connect to the user database, in order to fetch the emails of the users (patients + dentists).
  - MONGO_URL_NOTIFICATION - This is the mongo database connection URL to connect to the notification database, in order to save notifications once they have been created and sent to the users.
  - EMAIL - This is the email address which will be used to send the notifications from. It should simply be a string of the email you have set up your access token on.
- - ACCESS_TOKEN - This is the access token. When you go to manage your google account for the email you intend to use, search for 'App Passwords', set up an app password and copy-paste the password in a string.
+ - ACCESS_TOKEN - This is the access token. When you go to manage your google account for the email you intend to use, search for 'App Passwords', set up an app password and copy-paste the password in a string. Note that this only stays valid up to a certain amount of time, so it might need to be recreated if the service is being used a few days after the token's creation.
 
  Note: Make sure to only provide the access token and the email as a simple string and not use any symbols next to them such as ';' as the code will take as part of the email and errors regarding having an incorrect email would occur.
 
