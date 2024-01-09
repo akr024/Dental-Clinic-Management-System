@@ -25,6 +25,7 @@ router.get('/:id/appointments', (req, res) => {
 router.post('/', async (req, res) => {
     try {
         if (
+            !req.body.username ||
             !req.body.personnummer ||
             !req.body.firstName ||
             !req.body.lastName ||
@@ -36,6 +37,7 @@ router.post('/', async (req, res) => {
         }
 
         const newDentist = {
+            username: req.body.username,
             personnummer: req.body.personnummer,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -69,6 +71,7 @@ router.put('/',async(req,res)=>{
                 res.status(404).json({msg: response.msg})
             }
             const updatedDentist = {
+                username: dentist.username,
                 personnummer : dentist.personnummer,
                 firstName: dentistUpdates.firstName? dentistUpdates.firstName: dentist.firstName,
                 lastName: dentistUpdates.lastName?dentistUpdates.lastName:dentist.lastName,
