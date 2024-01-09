@@ -1,6 +1,6 @@
 import express from 'express'
 import {publishAwaitingResponse} from 'mqtt-service'
-import { TOPIC_CLINIC_CREATE} from '../config.js';
+import {TOPIC_CLINIC_CREATE,  TOPIC_CLINIC_QUERY} from '../config.js';
 const router = express.Router();
 
 
@@ -32,7 +32,24 @@ try {
 }
 })
 
+//GET clinics route added
+router.get('/', async (req, res) =>{
 
+    try {
+            publishAwaitingResponse(TOPIC_CLINIC_QUERY,null,(topic,payload,packet)=>{
+                console.log("Clinic controller")
+                const response = JSON.parse(payload.toString())
+                console.log("Response clinics is",response.clinics)
+                if(response.success){
+                   res.status(201).json(response.clinics)
+                } else{
+                    res.status(400).json({msg: response.msg})
+                }      
+            })
+    } catch (error) {
+        
+    }
+    })
 
 
 

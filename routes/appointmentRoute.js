@@ -14,14 +14,16 @@ router.post('/', async (req,res) => {
         } else{
             const newAppointment = {
                 clinicId: req.body.clinicId,
-                dentistId: req.body.dentistId, //temporary placeholder
-                dateTime: req.body.dateTime
+                dentistId: req.body.dentistId,
+                dateTime: req.body.dateTime,
+                availability: true
             }
             publishAwaitingResponse(TOPIC_APPOINTMENT_CREATE,JSON.stringify(newAppointment),(topic,payload,packet)=>{
     
                 const response = JSON.parse(payload.toString())
                 if(response.success){
-                    res.status(201).json(response.newAppointment)
+                    //response.appointment instead of response.newAppointmet
+                    res.status(201).json(response.appointment)
                 } else{
                     res.status(400).json(response.msg)
                 }      
