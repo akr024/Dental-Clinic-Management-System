@@ -18,6 +18,12 @@ Once the library has been cloned into the local environment, these are the steps
 
  Note: Make sure to only provide the access token and the email as a simple string and not use any symbols next to them such as ';' as the code will take as part of the email and errors regarding having an incorrect email would occur.
 
+ Once all the environment variables have been appropriately added and configured, you can simply run the service by typing: 'npm run dev'.
+
+ This should then console log that the user database, the MQTT broker, and the notification datbase have been connected.
+
+ Afterwards, the rest of the services are configured as such to publish to the notification service subscription topics for the notifications to be sent upon the execution of an event, such as cancelling an appointment or making a booking.
+
  # Testing
 
  Although only some basic testing has been added for this service due to the limitations of not being able to test by accessing the recipient's emails, but the testing can be run by typing the following command in the terminal: 'npm test'.
@@ -26,4 +32,3 @@ Once the library has been cloned into the local environment, these are the steps
 
  Primarily, Abhimanyu Kumar has been responsible for this service and has worked on it majorly. Support from Linh Pham and Piotr Ostrowski has also been given in configuring the topic names to be published to.
 
- 
