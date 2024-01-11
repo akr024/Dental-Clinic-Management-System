@@ -12,7 +12,7 @@ passport.use(
     },
     async (personnummer, password, done) => {
       try {
-        let user = await PatientModel.findOne({ Personnummer: personnummer });
+        let user = await PatientModel.findOne({ personnummer: personnummer });
         if (!user) {
           return done(null, false, { message: 'User not found' });
         }
