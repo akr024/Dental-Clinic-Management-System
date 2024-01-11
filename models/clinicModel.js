@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const clinicSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
   position: {
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true },
+    lat: { type: Number },
+    lng: { type: Number },
   },
   address: { type: String, required: true },
   appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'appointment' }],

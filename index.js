@@ -4,7 +4,7 @@ const axios = require("axios");
 var { Dentist } = require("./models/dentistSchema.js");
 var { Appointment } = require("./models/appointmentSchema.js");
 require("./models/Patient.js");
-require("./models/ClinicModel.js");
+var {Clinic} = require("./models/ClinicModel.js");
 const mongoose = require("mongoose");
 const moment = require("moment");
 
@@ -26,7 +26,8 @@ function askQuestion(query) {
     rl.question(query, resolve);
   });
 }
-//should be done in the dentist api, just here temporarly
+
+// Violates the architecture - Directly interacts with MongoDB (using Dentist.create) to create a new dentist
 async function createDentist(dentistData) {
   try {
     const dentist = await Dentist.create(dentistData);
@@ -62,20 +63,32 @@ async function registerDentist() {
   } catch (error) {
     console.error("An error occurred:", error.response?.data || error.message);
   } finally {
-    // After handling registration, go back to the main menu
     showMainMenu();
   }
 }
-async function checkCredentials() {
-  const username = await askQuestion("Enter username: ");
-  const password = await askQuestion("Enter password: ");
-  const dentist = await Dentist.findOne({ username: username, password:password }).populate("clinics");;
 
-  if (dentist) {
-    return dentist;
-  }
-  return null;
+// Doesn't violate the architecture - Sends a request to the authentication API (http://localhost:3000/api/auth/dentist/login) to check the credentials of a dentist
+async function checkCredentials() {
+  const personnummer = await askQuestion("Enter personnummer: ");
+  const password = await askQuestion("Enter password: ");
+  const apiUrl = "http://localhost:3000/api/auth/dentist/login";
+  const dentistData = {
+    personnummer,
+    password,
+  };
+  try {
+    const response = await axios.post(apiUrl, dentistData);
+    let dentist = response.data
+    if (dentist) {
+      return dentist;
+    }
+    return null;
+  } catch (error) {
+    console.error("An error occurred:", error.response?.data || error.message);
+  } 
 }
+
+// Violates the architecture - Uses Appointment.find to directly retrieve appointments for a specific dentist from the database
 async function findAppointmentsByDentist(dentistId) {
   try {
     const appointments = await Appointment.find({
@@ -87,24 +100,24 @@ async function findAppointmentsByDentist(dentistId) {
     throw error;
   }
 }
+
+// Violates the architecture - Calls findAppointmentsByDentist to directly retrieve and display appointments for a dentist
 async function viewBookedAppointments(dentistId) {
   try {
     const appointments = await findAppointmentsByDentist(dentistId);
 
     if (appointments) {
-      // Format appointments for tabular display
-      const formattedAppointments = appointments.filter(appointment => !appointment.availability).map //filters out the availability = true (if the appointment is not booked by a patient)
+      const formattedAppointments = appointments.filter(appointment => !appointment.availability).map
       ((appointment) => {
         const patientName =
           appointment.patient?.Firstname + " " + appointment.patient?.Lastname;
-        const clinicName = appointment.clinicId?.name;
+          const clinicName = appointment.clinicId?.name;
         return {
           patient: patientName || "Unknown Patient",
           dateTime: moment(appointment.dateTime).format("YYYY-MM-DD HH:mm:ss"),
           clinicName: clinicName || "Unknown Clinic"
         };
       });
-      // Print the formatted appointments as a table
       console.table(formattedAppointments);
     } else {
       console.log("No appointments found.");
@@ -112,58 +125,79 @@ async function viewBookedAppointments(dentistId) {
   } catch (error) {
     console.error("Error:", error);
   } finally {
-    // Call showMainMenu() after viewAppointments finishes execution
     showMainMenu();
   }
 }
+
+// Violates the architecture - Creates a new clinic and associates it with a dentist by updating the dentist's information in the database
 async function registerClinic(dentist) {
-  const name = await askQuestion("Enter clinic name: ");
-  const address = await askQuestion("Enter address: ");
-
-  const clinicData = {
-    name,
-    address,
-  };
-  //api url for dentist api, clinics
-  const apiUrl = "http://localhost:8080/clinics";
-
   try {
-    const response = await axios.post(apiUrl, clinicData);
-    console.log("Created clinic:", response.data.name);
-    let clinicId = response.data._id
-    dentist.clinics.push(clinicId);
-    await dentist.save();
-    console.log("Updated dentist:",dentist.firstname)
+    const name = await askQuestion("Enter clinic name: ");
+    const lng = await askQuestion("Enter longtitude: ");
+    const lat = await askQuestion("Enter latitude: ");
+    const address = await askQuestion("Enter address: ");
+
+    const clinicData = {
+      name: name,
+      position: {
+        lat: lat,
+        lng: lng
+      },
+      address: address,
+    };
+
+    const clinic = new Clinic(clinicData);
+    await clinic.save();
+    console.log("Created clinic:", clinic.name);
+
+    const dentist_new = await Dentist.findByIdAndUpdate(
+      dentist._id,
+      { $addToSet: { clinics: clinic._id } },
+      { new: true }
+    );
+
+    console.log(`Clinic with ID: \x1b[32m${clinic._id}\x1b[0m added to dentist with ID: \x1b[32m${dentist._id}\x1b[0m`);
+        
+    await dentist_new.save();
+    console.log("Updated dentist:", dentist.firstname);
   } catch (error) {
     console.error("An error occurred:", error.response?.data || error.message);
   } finally {
     showMainMenu();
   }
 }
+
+// Doest violate the architecture - Retrieves clinic data from an external API (http://localhost:3001/clinics) and updates the dentist's information in the database based on user input
 async function joinClinic(dentist) {
   try {
-    const apiUrl = "http://localhost:8080/clinics";
+    const apiUrl = "http://localhost:3001/clinics";
     const response = await axios.get(apiUrl);
-    const clinicsData = response.data
+    const clinicsData = response.data;
+
     for (let i = 0; i < clinicsData.length; i++) {
       console.log(`${i + 1}. ${clinicsData[i].name}`);
     }
-  
+
     let choice;
     do {
       choice = parseInt(await askQuestion("Choose the clinic you want to join:"));
     } while (choice < 1 || choice > clinicsData.length);
-  
+
     const selectedClinic = clinicsData[choice - 1];
     console.log(`You selected clinic: ${selectedClinic.name}`);
-    clinicId = selectedClinic._id;
-    const isClinicAlreadyAdded = dentist.clinics.some(clinic => clinic === clinicId);
+
+    const isClinicAlreadyAdded = dentist.clinics.some((clinic) => clinic === selectedClinic._id);
+
     if (!isClinicAlreadyAdded) {
-      dentist.clinics.push(clinicId);
-      await dentist.save();
-      console.log(`Clinic with ID ${clinicId} added to dentist with ID ${dentist._id}`);
+      const dentist_updated = await Dentist.findByIdAndUpdate(
+        dentist._id,
+        { $addToSet: { clinics: selectedClinic._id } },
+        { new: true }
+      );
+
+      console.log(`Clinic with ID ${selectedClinic._id} added to dentist with ID ${dentist_updated._id}`);
     } else {
-      console.log(`Clinic with ID ${clinicId} is already in the dentist's list`);
+      console.log(`Clinic with ID ${selectedClinic._id} is already in the dentist's list`);
     }
   } catch (error) {
     console.error("An error occurred:", error.response?.data || error.message);
@@ -171,6 +205,8 @@ async function joinClinic(dentist) {
     showMainMenu();
   }
 }
+
+//Violates the architecture - Retrieves clinic data from the dentist's information and creates a new appointment in the database
 async function createTimeAppointment(dentist) {
   let hour;
   let date;
@@ -184,7 +220,6 @@ async function createTimeAppointment(dentist) {
   } while (!regexDate.test(date));
   console.log("Date is",date)
   const dateTime = new Date(`${date} ${hour}`);
-  //get dentist clinics and prompt them
   const apiUrl = "http://localhost:8080/appointments";
 
   try {
@@ -202,12 +237,14 @@ async function createTimeAppointment(dentist) {
   
     const clinicId = dentist.clinics[choice - 1]._id;
     const appointmentData = {
-      dateTime,
-      dentistId,
-      clinicId
+      dateTime:dateTime,
+      dentistId:dentistId,
+      clinicId:clinicId,
+      availability:true
     };
-    const response = await axios.post(apiUrl, appointmentData);
-    console.log("Created appointment with id:", response.data._id);
+    const appointment = new Appointment(appointmentData)
+    await appointment.save();
+    console.log("Created appointment with id:", appointment._id);
   } catch (error) {
     console.error("An error occurred:", error.response?.data || error.message);
   } finally {
@@ -215,6 +252,7 @@ async function createTimeAppointment(dentist) {
   }
 }
 
+// Follows the architecture
 function showMainMenu() {
   console.log("Welcome to the Dentist UI");
   console.log("1. Register as a Dentist");
