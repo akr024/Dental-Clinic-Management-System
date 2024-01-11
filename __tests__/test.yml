@@ -18,4 +18,6 @@ scenarios:
     - get:
         url: "/clinics"
     - get:
-        url: "/clnics/659ffc86c4707f021691a135/appointments"
+        url: "/clinics/65a00e52656ee98bf15ed65b/appointments"
+    - get:
+        url: "/clinics/65a00e52656ee98bf15ed65b/reviews"
