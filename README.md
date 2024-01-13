@@ -4,10 +4,6 @@ This repository has the codebase for the Authentication Service, an important co
 
 ## Project Structure
 
-<!-- The project is organized with the following main components: -->
-
-## Project Structure
-
 - **models:** Contains data models
 - **routes:** Implements authentication for dentists and patients
 - **test:** Includes tests for authentication
