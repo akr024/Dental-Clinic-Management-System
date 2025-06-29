@@ -1,0 +1,23 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 20
+      name: Startup phase
+  plugins:
+      -ensure: {}
+
+  ensure:
+      thresholds:
+        - http.response_time.max: 1000
+      conditions:
+        - expression: "http.codes.200 == http.requests"
+scenarios:
+  - flow:
+    - get:
+        url: "/clinics"
+    - get:
+        url: "/clinics/65a00e52656ee98bf15ed65b/appointments"
+    - get:
+        url: "/clinics/65a00e52656ee98bf15ed65b/reviews"
