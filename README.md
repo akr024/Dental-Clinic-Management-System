@@ -35,7 +35,7 @@ The system follows a **microservices architecture**, with loosely coupled servic
 
 ## Key Features
 
-### 🔔 Real-Time Notifications
+### Real-Time Notifications
 - Notification service built using MQTT’s pub/sub architecture  
 - Instant updates for appointment confirmations, cancellations, and reminders  
 - Asynchronous communication across distributed services  
