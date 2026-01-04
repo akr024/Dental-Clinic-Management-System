@@ -1,5 +1,8 @@
 # Dental Clinic Management System
 
+This project was originally developed and version-controlled on my university’s enterprise Git system as part of coursework/team collaboration.  
+Due to access and migration limitations, the original commit history is not visible in this public GitHub repository.
+
 A **microservices-based distributed system** designed to streamline dental clinic operations by enabling appointment management, patient booking, and real-time notifications using a **publish–subscribe architecture (MQTT)**.
 
 This project demonstrates the design and implementation of a **scalable, event-driven system** suitable for real-world healthcare workflows.
