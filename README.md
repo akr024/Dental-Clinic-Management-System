@@ -3,7 +3,7 @@
 This project was originally developed and version-controlled on my university’s enterprise Git system as part of coursework/team collaboration.  
 Due to access and migration limitations, the original commit history is not visible in this public GitHub repository.
 
-A **microservices-based distributed system** designed to streamline dental clinic operations by enabling appointment management, patient booking, and real-time notifications using a **publish–subscribe architecture (MQTT)**.
+A **microservices-based distributed system** designed to streamline dental clinic operations by enabling appointment management, patient booking, and real-time notifications using a **publish–subscribe architecture (custom MQTT)**.
 
 This project demonstrates the design and implementation of a **scalable, event-driven system** suitable for real-world healthcare workflows.
 
@@ -55,13 +55,13 @@ The system follows a **microservices architecture**, with loosely coupled servic
 
 ---
 
-## ⚙️ Build & Run Instructions
+## Build & Run Instructions
 
 > **Important:**  
 > This repository uses a **monorepo structure**.
 
 **Build, run, and configuration instructions are located inside each individual subfolder**, including:
-- Each service under `/services`
-- The `/frontend` directory
+- Each service under `/`
+- The frontend GUI is also a service: `/paitient-gui`
 
 Please refer to the respective `README.md` files within those directories for service-specific setup steps.
